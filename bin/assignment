@@ -1,0 +1,15 @@
+niečo ako hra Swords and Sandals, ale bolo by to v príkazovom riadku (ak by bolo 
+ovládanie moc zlé, tak by som nejaké GUI prirobil). Vlastne išlo by o to, že hráč by mal k dispozícii vlastnú postavu,
+s ktorou by počas niekoľkých kôl (= "dní" v časovej osi hry) bojoval s počítačom, kupoval si vylepšenia a za XP by sa
+mohol posúvať vyššie v bojových možnostiach (sila, obrana,...). Na konci každého dňa by musel bojovať proti silnému
+majstrovi, a ak by ho porazil, tak by mohol prežiť do ďalšieho dňa...po 3/4/5 dňoch by bol posledný majster a ak by ho
+porazil, tak by vyhral hru a spočítalo sa jeho skóre a nejak zapísalo. Progress hry by sa dal ukladať a pri zapnutí hry by 
+sa dalo načítať uloženú/začať novú. Mohlo by takéto niečo byť? Príkazový riadok by vždy popísal situáciu hráča, 
+aké má možnosti/príkazy atď.
+
+- intro
+- armour
+- weapons
+- fighting
+- level up
+- 

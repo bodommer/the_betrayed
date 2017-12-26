@@ -1,0 +1,13 @@
+aaa;bbb;ccc
+ccc;1;1;A semi-solid armour type;c-name;200
+ccc;1;1;A semi-solid armour type;c-name;200
+ccc;1;1;A semi-solid armour type;c-name;200
+
+
+
+
+
+
+
+FORMAT: line 1: list of armour names(ordered) according to command name, then each line:
+		name;defence;weight;description;command name;price
