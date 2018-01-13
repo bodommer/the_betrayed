@@ -7,11 +7,10 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.Arrays;
-import java.util.HashSet;
+import java.util.List;
 import java.util.Locale;
 import java.util.ResourceBundle;
 import java.util.Scanner;
-import java.util.Set;
 import java.util.prefs.Preferences;
 
 import cz.cuni.mff.java.character.Hero;
@@ -51,28 +50,19 @@ public class Controller {
 	 * of the program. It has three states - Main menu, Game menu and Exit
 	 */
 	private void startGame() {
-		System.out.println(rs.getString("intro"));
+		System.out.println(rs.getString("welcome"));
 		while (true) {
 			if (exit == 2) {
 				mainMenu();
 			}
 			if (exit == 0) {
-				System.out.println("Goodbye!");
+				System.out.println(rs.getString("goodbye"));
 				System.exit(0);
 			}
 			while (exit == 1) {
-				parse(getInput());
+				gameMenu();
 			}
 		}
-	}
-
-	/**
-	 * This method is used to get some answers and commands from the user.
-	 * 
-	 * @return user input as an answer to game's prompt
-	 */
-	private String getInput() {
-		return scanner.nextLine();
 	}
 
 	/**
@@ -82,11 +72,9 @@ public class Controller {
 	 * @param input
 	 *            - command, that user writes to choose an option from the game menu
 	 */
-	private void parse(String input) {
-		System.out.println(
-				"You are in game menu. Your key options are: fight, visit home, visit armoury, visit weapons shop, level up, save, menu, help and exit.\n What is gonna be your next step?");
-		
-		switch (Input.get(new HashSet<String>(Arrays.asList("fight", "visit armoury", "visit weapons shop", "level up", "visit home", "save", "menu", "help", "exit")), scanner)) {
+	private void gameMenu() {
+		System.out.println(rs.getString("gameMenu"));
+		switch (Input.get(Arrays.asList("fight", "visitArmoury", "visitWeaponsShop", "levelUp", "visitHome", "save", "menu", "help", "exit"))) {
 		case "fight":
 			boolean boss = false;
 			if (hero.getFight() % 6 == 5) {
@@ -97,27 +85,26 @@ public class Controller {
 			} else {
 				hero.addKill();
 				if (hero.getFight() % 6 == 5) {
-					System.out.println("Watch out, your next opponent is level BOSS! You shall prepare for the fight!");
+					System.out.println(rs.getString("nextFightBoss"));
 				}
 				if (hero.getFight() == 18) {
-					System.out.println(
-							"So this is it. You are the master fighter! All local guards are afraid of you and let you walk away from the city with your beloved girl. WELL DONE!");
-					System.out.printf("Your score was %d. A solid game!", hero.getScore());
+					System.out.println(rs.getString("endGameLine"));
+					System.out.printf(rs.getString("scoreLine"), hero.getScore());
 					exit = 0;
 				}
 			}
 			break;
-		case "visit armoury":
-			Armoury.shop(hero, scanner);
+		case "visitArmoury":
+			Armoury.shop(hero);
 			break;
-		case "visit weapons shop":
-			WeaponsShop.shop(hero, scanner);
+		case "visitWeaponsShop":
+			WeaponsShop.shop(hero);
 			break;
-		case "level up":
-			TrainingGround.levelUp(hero, scanner);
+		case "levelUp":
+			TrainingGround.levelUp(hero);
 			break;
-		case "visit home":
-			new Home(hero, scanner);
+		case "visitHome":
+			new Home(hero);
 			break;
 		case "save":
 			saveGame();
@@ -139,25 +126,22 @@ public class Controller {
 	 * New game procedure - setting hero's name, attributes etc.
 	 */
 	private void startProcedure() {
-		System.out.println(
-				"Before you set off on an amazing journey, your hero needs to be created.\nEnter your warrior's name: ");
+		System.out.println(rs.getString("getName"));
 		String name = scanner.nextLine();
-		System.out.println("Now...what is his strongest abiility? Attack, defence, or reflexes? ");
-		Set<String> options = new HashSet<String>(Arrays.asList("attack", "defence", "reflexes"));
-		hero = new Hero(name, Input.get(options, scanner));
-		System.out.println(
-				"Great! Now we have a new hero. His destiny is only in your hands! What is going to be his first step on the way to saving his dear lady and also his very own life?");
-		arena = new Arena(hero, scanner);
+		System.out.println(rs.getString("getSkillset"));
+		List<String> options = Arrays.asList("attack", "defence", "reflexes");
+		hero = new Hero(name, Input.get(options));
+		System.out.println(rs.getString("heroCreated"));
+		arena = new Arena(hero);
 	}
 
 	/**
 	 * Controls the Main menu and its commands.
 	 */
 	private void mainMenu() {
-		System.out.println("Main menu options: new game, load, help, change language, exit.");
-		switch (Input.get(new HashSet<String>(Arrays.asList("new game", "load", "help", "change language", "exit")),
-				scanner)) {
-		case "new game": // start a new game and enter game menu
+		System.out.println(rs.getString("mainMenu"));
+		switch (Input.get(Arrays.asList("newGame", "load", "help", "changeLanguage", "exit"))) {
+		case "newGame": // start a new game and enter game menu
 			startProcedure();
 			exit = 1; // set menu to game menu
 			break;
@@ -168,7 +152,7 @@ public class Controller {
 		case "help":
 			// show options
 			break;
-		case "change language":
+		case "changeLanguage":
 			languageSelection();
 			break;
 		case "exit":
@@ -180,18 +164,18 @@ public class Controller {
 	}
 
 	private void saveGame() {
-		System.out.println("Saving current game will erase other saved game (if any). Do you want to continue? yes/no");
-		if (Input.get(new HashSet<String>(Arrays.asList("yes", "no")), scanner).equals("no")) {
-			System.out.println("Your game was not saved.");
+		System.out.println(rs.getString("saveQuestion"));
+		if (Input.get(Arrays.asList("yes", "no")).equals("no")) {
+			System.out.println(rs.getString("gameNotSaved"));
 			return;
 		}
 		try {
 			ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(new File("./hero.ser")));
 			oos.writeObject(hero);
 			oos.close();
-			System.out.println("Your hero is now safely saved!");
+			System.out.println(rs.getString("gameSaved"));
 		} catch (IOException e) {
-			System.out.println("The hero does not want to be saved. Try again to persuade him!");
+			System.out.println(rs.getString("saveFailed"));
 		}
 	}
 
@@ -200,14 +184,13 @@ public class Controller {
 			ObjectInputStream ois = new ObjectInputStream(new FileInputStream("hero.ser"));
 			hero = (Hero) ois.readObject();
 			ois.close();
-			arena = new Arena(hero, scanner);
-			System.out.print("Your hero has woken up and is ready to fight again!");
+			arena = new Arena(hero);
+			System.out.print(rs.getString("successfulLoad"));
 		} catch (IOException e) {
 			System.out
-					.println("The powers that be decided that you are not to get your game loaded. Please, try again!");
+					.println(rs.getString("loadFailed"));
 		} catch (ClassNotFoundException e) {
-			System.out.println(
-					"Your hero is hiding and we were unable to locate him. Please, try again for a higher chance to find him!");
+			System.out.println(rs.getString("loadFailedClassNotFound"));
 		}
 	}
 
@@ -223,12 +206,11 @@ public class Controller {
 	private void languageSelection() {
 		System.out.println(rs.getString("availableLanguages"));
 		System.out.println("en: English\nsk: Slovenčina");
-		String choice = Input.get(new HashSet<String>(Arrays.asList("en", "sk", "exit")), scanner);
+		String choice = Input.get(Arrays.asList("en", "sk", "exit"));
 		if (!(choice.equals("exit"))) {
 			Preferences prefs = Prefs.getPrefs();
 			if (!(prefs.get("language", null).equals(choice))) {
 				prefs.put("language", choice);
-				setLanguage();
 				System.out.println(rs.getString("languageChanged"));
 			}
 		}

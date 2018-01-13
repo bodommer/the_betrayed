@@ -3,14 +3,14 @@ package cz.cuni.mff.java.places;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Scanner;
+import java.util.ResourceBundle;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 import cz.cuni.mff.java.character.Hero;
 import cz.cuni.mff.java.equipment.Armour;
 import cz.cuni.mff.java.equipment.Weapon;
+import cz.cuni.mff.java.main.Controller;
 import cz.cuni.mff.java.main.Input;
 import cz.cuni.mff.java.main.MyFileReader;
 
@@ -26,8 +26,8 @@ public class Home {
 	Set<String> heroArmours;
 	HashMap<String, String> weapons;
 	HashMap<String, String> armours;
-	Scanner scanner;
 	Hero hero;
+	ResourceBundle rs;
 
 	/**
 	 * The constructor.
@@ -35,13 +35,13 @@ public class Home {
 	 * @param hero
 	 * @param scanner
 	 */
-	public Home(Hero hero, Scanner scanner) {
-		this.scanner = scanner;
+	public Home(Hero hero) {
 		this.hero = hero;
 		weapons = new HashMap<String, String>();
 		armours = new HashMap<String, String>();
 		heroWeapons = hero.getWeaponsSet();
 		heroArmours = hero.getArmourSet();
+		rs = Controller.getController().getResourceBundle();
 		visitHome();
 	}
 
@@ -49,11 +49,11 @@ public class Home {
 	 * Waits for the input - where user writes what he wants to do.
 	 */
 	private void visitHome() {
-		System.out.println("Welcome home!");
+		System.out.println(rs.getString("homeWelcome"));
 		while (true) {
 			System.out
-					.println("What do you want to do?");
-			String answer = Input.get(new HashSet<String>(Arrays.asList("See weapons", "see armour", "change weapon", "change armour","exit")), scanner);
+					.println(rs.getString("homePrompt1"));
+			String answer = Input.get(Arrays.asList("See weapons", "see armour", "change weapon", "change armour","exit"));
 			switch (answer) {
 			case "see weapons":
 				seeWeapons();
@@ -81,10 +81,11 @@ public class Home {
 	private void seeWeapons() {
 		MyFileReader mfr = new MyFileReader("equipment", "WeaponList");
 		int len = mfr.readLine().length();
+		String item = rs.getString("homeWeaponList");
 		for (int i = 0; i < len; i++) {
 			String[] data = mfr.readAndSeparateLine();
 			if (heroWeapons.contains(data[10])) {
-				System.out.printf("Option %s, %s, Attack: %s, Weight: %s, Description: %s\n", data[10], data[0],
+				System.out.printf(item, data[10], data[0],
 						data[1], data[2], data[3]);
 				weapons.put(data[10], data[0]);
 			}
@@ -97,10 +98,11 @@ public class Home {
 	private void seeArmour() {
 		MyFileReader mfr = new MyFileReader("equipment", "ArmourList");
 		int len = mfr.readLine().length();
+		String item = rs.getString("homeArmourList");
 		for (int i = 0; i < len; i++) {
 			String[] data = mfr.readAndSeparateLine();
 			if (heroArmours.contains(data[4])) {
-				System.out.printf("Option %s: %s, Defence: %s, Weight: %s, Description: %s\n", data[4], data[0],
+				System.out.printf(item, data[4], data[0],
 						data[1], data[2], data[3]);
 				armours.put(data[4], data[0]);
 			}
@@ -111,14 +113,14 @@ public class Home {
 	 * Offers a list of weapons that a user can choose from.
 	 */
 	private void changeWeapon() {
-		System.out.printf("Your weapons: %s",
+		System.out.printf(rs.getString("homeWeapons"),
 				new ArrayList<String>(heroWeapons).stream().collect(Collectors.joining(", ")));
-		System.out.println("Which weapon do you want to use?");
+		System.out.println(rs.getString("homeWeaponChoice"));
 		heroWeapons.add("exit");
-		String answer = Input.get(heroWeapons, scanner);
+		String answer = Input.get(heroWeapons);
 		if (!(answer.equals("exit"))) {
 			hero.setWeapon(new Weapon(weapons.get(answer)));
-			System.out.printf("You are now using %s.\n", weapons.get(answer));
+			System.out.printf(rs.getString("homeWeaponChosen"), weapons.get(answer));
 		}
 		heroWeapons.remove("exit");
 	}
@@ -127,14 +129,14 @@ public class Home {
 	 * Offers a list of armours that a user can choose from.
 	 */
 	private void changeArmour() {
-		System.out.printf("Your armours: %s",
+		System.out.printf(rs.getString("homeArmours"),
 				new ArrayList<String>(heroArmours).stream().collect(Collectors.joining(", ")));
-		System.out.println("Which armour do you want to wear?");
+		System.out.println(rs.getString("homeAmrourChoice"));
 		heroArmours.add("exit");
-		String answer = Input.get(heroArmours, scanner);
+		String answer = Input.get(heroArmours);
 		if (!(answer.equals("exit"))) {
 			hero.setArmour(new Armour(armours.get(answer)));
-			System.out.printf("You are now wearing %s.\n", armours.get(answer));
+			System.out.printf(rs.getString("homeArmourChosen"), armours.get(answer));
 		}
 		heroArmours.remove("exit");
 	}

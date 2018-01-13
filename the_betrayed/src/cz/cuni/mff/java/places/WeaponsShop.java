@@ -1,10 +1,11 @@
 package cz.cuni.mff.java.places;
 
 import java.util.HashMap;
-import java.util.Scanner;
+import java.util.ResourceBundle;
 import java.util.Set;
 
 import cz.cuni.mff.java.character.Hero;
+import cz.cuni.mff.java.main.Controller;
 import cz.cuni.mff.java.main.Input;
 import cz.cuni.mff.java.main.MyFileReader;
 
@@ -20,43 +21,45 @@ public final class WeaponsShop {
 	 * @param hero
 	 * @param scanner
 	 */
-	public static void shop(Hero hero, Scanner scanner) {
-		System.out.println("Welcome to the shop! ");
+	public static void shop(Hero hero) {
+		ResourceBundle rs = Controller.getController().getResourceBundle();
+		System.out.println(rs.getString("weaponShopWelcome"));
 		HashMap<String, Integer> attr = new HashMap<String, Integer>();
 
 		//load list of weapons and show what weapons a user can buy
 		MyFileReader mfr = new MyFileReader("equipment", "WeaponList");
 		String[] options = mfr.readAndSeparateLine();
-		System.out.println("Here is our inventory of weapons, which you do not own yet:");
+		System.out.println(rs.getString("weaponShopOffer"));
 		Set<String> weapon = hero.getArmourSet();
 		mfr.readLine();
+		String itemOption = rs.getString("weaponShopOption");
 		for (int i = 1; i < options.length-1; i++) {
 			String[] data = mfr.readAndSeparateLine();
 			if (!(weapon.contains(options[i]))) {
-				System.out.printf("Option %s: %s, %s coins. Attack: %s, Weight: %s, Description: %s\n", data[10],
+				System.out.printf(itemOption, data[10],
 						data[0], data[11], data[1], data[2], data[3]);
 				attr.put(data[10], Integer.parseInt(data[11]));
 			}
 		}
 			mfr = null;
-		System.out.printf("Do you want to buy something, or exit? You currently have %d coins.\n", hero.getCoins());
+		System.out.printf(rs.getString("weaponShopPrompt"), hero.getCoins());
 		Set<String> inputOptions = attr.keySet();
 		inputOptions.add("exit");
 		//prompts user to choose an option
 		while (true) {
-			String input = Input.get(inputOptions, scanner);
+			String input = Input.get(inputOptions);
 			if (!(input.equals("exit"))) {
 				if (hero.getCoins() >= attr.get(input)) {
 					hero.addWeapon(input);
 					hero.spendCoins(attr.get(input));
 					System.out.printf(
-							"You have successfully bought a new weapon! You now have %d coins. \n",
+							rs.getString("weaponShopPurchase"),
 							hero.getCoins());
-					System.out.println("Do you want to buy another weapon?");
+					System.out.println(rs.getString("weaponShopNextPrompt"));
 					attr.remove(input);
 					inputOptions.remove(input);
 				} else {
-					System.out.println("You have not got enough coins for this weapon!\n");
+					System.out.println(rs.getString("weaponShopNotEnoughMoney"));
 				}
 			} else {
 				return;

@@ -6,6 +6,7 @@ import java.util.Set;
 
 import cz.cuni.mff.java.equipment.Armour;
 import cz.cuni.mff.java.equipment.Weapon;
+import cz.cuni.mff.java.main.Controller;
 
 /**
  * Hero is the main concept of the game. It stores all the progress of the game, game data etc.
@@ -53,7 +54,7 @@ public class Hero extends Person {
 		coins += c;
 		addScore(x);
 		addScore(c);
-		System.out.printf("Congratulations! You have won the game. Your gained %d coins and %d XP!\n", c, x);
+		System.out.printf(Controller.getController().getResourceBundle().getString("playerWon"), c, x);
 		setLife(getHP());
 		addFight();
 	}

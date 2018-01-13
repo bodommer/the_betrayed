@@ -4,13 +4,14 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Random;
-import java.util.Scanner;
+import java.util.ResourceBundle;
 import java.util.concurrent.TimeUnit;
 
 import cz.cuni.mff.java.character.Hero;
 import cz.cuni.mff.java.character.Opponent;
 import cz.cuni.mff.java.character.Person;
 import cz.cuni.mff.java.equipment.Weapon;
+import cz.cuni.mff.java.main.Controller;
 import cz.cuni.mff.java.main.Input;
 
 /**
@@ -23,17 +24,16 @@ import cz.cuni.mff.java.main.Input;
 public class Arena {
 
 	private Hero hero;
-	private Scanner scanner;
-	
+	private ResourceBundle rs;
+
 	/**
 	 * The constructor.
 	 * 
 	 * @param hero
-	 * @param scanner
 	 */
-	public Arena(Hero hero, Scanner scanner) {
+	public Arena(Hero hero) {
 		this.hero = hero;
-		this.scanner = scanner;
+		rs = Controller.getController().getResourceBundle();
 	}
 
 	/**
@@ -54,59 +54,54 @@ public class Arena {
 
 		boolean end = false;
 		int start = new Random().nextInt(2); // 1 - hero starts, 0 - opponent starts
-		System.out.println("This is going to be a tough fight.");
-		System.out.printf("Some info about you: %s, attack: %d, defence: %d, hp: %d, weapon: %s, armour: %s, %s\n",
-				hero.getName(), hero.getAttack(), hero.getDefence(), hero.getHP(), hero.getWeapon(), hero.getArmour(),
-				fight.heroStats.toString());
-		System.out.printf(
-				"Some info about your opponent: %s, attack: %d, defence: %d, hp: %d, weapon: %s, armour: %s, %s\n",
-				fight.opponent.getName(), fight.opponent.getAttack(), fight.opponent.getDefence(),
-				fight.opponent.getHP(), fight.opponent.getWeapon(), fight.opponent.getArmour(),
-				fight.opponentStats.toString());
+		System.out.println(rs.getString("fightIntro"));
+		System.out.printf(rs.getString("heroFightInfo"), hero.getName(), hero.getAttack(), hero.getDefence(),
+				hero.getHP(), hero.getWeapon(), hero.getArmour(), fight.heroStats.toString());
+		System.out.printf(rs.getString("opponentFightInfo"), fight.opponent.getName(), fight.opponent.getAttack(),
+				fight.opponent.getDefence(), fight.opponent.getHP(), fight.opponent.getWeapon(),
+				fight.opponent.getArmour(), fight.opponentStats.toString());
 
 		if (start == 1) { // version where hero starts
-			System.out.println("You are the first one to start the battle. What are you gonna do?");
+			System.out.println(rs.getString("playerStartsBattle"));
 			while (!(end)) {
 				end = fight.heroTurn(); // get hero's turn
 				if (end) { // if opponent is true
 					return false; // return false - here is NOT dead
 				} else {
-					System.out.printf("Your opponent's life remaining: %d HP\n", fight.opponent.getLife());
-					System.out.println("Your opponent's turn.");
+					System.out.printf(rs.getString("opponentHP"), fight.opponent.getLife());
+					System.out.println(rs.getString("opponentTurn"));
 					try {
 						TimeUnit.SECONDS.sleep(1);
 						end = fight.opponentTurn(); // get opponent's turn
 					} catch (InterruptedException ie) { // if an error occurs
-						System.out.println("Your opponent got a heart attack. You win!");
+						System.out.println(rs.getString("playerWin"));
 						return false;
 					}
 					if (hero.getLife() > 0) { // check if hero is still alive
-						System.out.printf("Your remaining life: %d HP.\n", hero.getLife());
+						System.out.printf(rs.getString("playerHP"), hero.getLife());
 					}
 				}
 			}
-			System.out.printf(
-					"You were unable to beat your opponent and you died. What a tragedy! End of game, your score was: %d. GOOD GAME!",
-					hero.getScore());
+			System.out.printf(rs.getString("opponentWin"), hero.getScore());
 			return true;
 		} else { // version where opponent starts first
-			System.out.println("Your opponent starts the battle");
+			System.out.println(rs.getString("opponentStartsBattle"));
 			while (!(end)) {
-				System.out.println("Your opponents turn.");
+				System.out.println(rs.getString("playerTurn"));
 				try {
 					TimeUnit.SECONDS.sleep(1);
 					end = fight.opponentTurn();
 				} catch (InterruptedException ie) {
-					System.out.println("Your opponent got a heart attack. You win!");
+					System.out.println(rs.getString("playerWin"));
 					return false;
 				}
 				if (end) {
 					return true;
 				} else {
-					System.out.printf("Your remaining life: %d HP\n", hero.getLife());
+					System.out.printf(rs.getString("playerHP"), hero.getLife());
 					end = fight.heroTurn();
 					if (fight.opponent.getLife() > 0) {
-						System.out.printf("Your opponent's remaining life: %d HP \n", fight.opponent.getLife());
+						System.out.printf(rs.getString("opponentHP"), fight.opponent.getLife());
 					}
 				}
 			}
@@ -151,7 +146,7 @@ public class Arena {
 			if (opponent.getHP() > 0) {
 				createChances(); // create percentual chances for attack success for all attack types.
 			} else { // if an error occurs when creating the opponent (HP = -1 then)
-				System.out.println("Arena is busy. Please, try again later.");
+				System.out.println(rs.getString("arenaError"));
 				error = true;
 			}
 		}
@@ -182,6 +177,7 @@ public class Arena {
 
 		/**
 		 * generates opponent's turn
+		 * 
 		 * @return - if hero is dead, return true
 		 */
 		protected boolean opponentTurn() {
@@ -210,7 +206,9 @@ public class Arena {
 
 		/**
 		 * player is prompted to attack
-		 * @return - returns true, if the opponent is dead after hero's latest attacking move.
+		 * 
+		 * @return - returns true, if the opponent is dead after hero's latest attacking
+		 *         move.
 		 */
 		protected boolean heroTurn() {
 			List<String> list;
@@ -220,19 +218,20 @@ public class Arena {
 				list = Arrays.asList("slash", "stab", "throw weapon");
 			}
 			if (list.size() == 2) {
-				System.out.println(
-						"You are fighting with your bare hands. You only can punch or slap your opponent.");
+				System.out.println(rs.getString("bareHandsOptions"));
 			} else {
-				System.out.println(
-						"It is your turn. How do you want to attack your opponent? Slash, stab, or throw your weapon?");
+				System.out.println(rs.getString("weaponOptions"));
 			}
-			return performAttack("hero", Input.get(new HashSet<String>(list), scanner));
+			return performAttack("hero", Input.get(new HashSet<String>(list)));
 		}
 
 		/**
 		 * Perform the selected type of attack.
-		 * @param who - who is the attacker? hero or opponent?
-		 * @param attackType - what kind of attack?
+		 * 
+		 * @param who
+		 *            - who is the attacker? hero or opponent?
+		 * @param attackType
+		 *            - what kind of attack?
 		 * @return
 		 */
 		private boolean performAttack(String who, String attackType) {
@@ -265,15 +264,15 @@ public class Arena {
 				ran = new Random().nextDouble();
 				if (ran >= attackerStats.getSlashChance()) {
 					if (who.equals("hero")) {
-						System.out.println("Your slash attack was lame and your enemy managed to defend well!");
+						System.out.println(rs.getString("playerSlashFail"));
 					} else {
-						System.out.println("Your opponent tried to slash you, but it wasn't very effective...");
+						System.out.println(rs.getString("opponentSlashFail"));
 					}
 				} else {
 					if (who.equals("hero")) {
-						System.out.println("WOW! What a slash! Your enemy was badly wounded!!");
+						System.out.println(rs.getString("playerSlashHit"));
 					} else {
-						System.out.println("Your opponent slashed you really bad!");
+						System.out.println(rs.getString("opponentSlashHit"));
 					}
 					damage = attacker.getWeapon().getSlashHit();
 				}
@@ -283,43 +282,42 @@ public class Arena {
 				ran = new Random().nextDouble();
 				if (ran >= attackerStats.getStabChance()) {
 					if (who.equals("hero")) {
-						System.out.println("You tried to stab your opponent, but he somehow managed to avoid it!");
+						System.out.println(rs.getString("playerStabFail"));
 					} else {
-						System.out.printf("%s tried to stab you, but you were fast enough to fend off his attack!\n",
-								attacker.getName());
+						System.out.printf(rs.getString("opponentStabFail"), attacker.getName());
 					}
 				} else {
 					if (who.equals("hero")) {
-						System.out
-								.println("AAARGH! Your stab attack was effective and your opponent is badly wounded!!");
+						System.out.println(rs.getString("playerStabHit"));
 					} else {
-						System.out.println("Your opponent stabbed you and it left serious wounds on your body. Ouch!");
+						System.out.println(rs.getString("opponentStabHit"));
 					}
 					damage = attacker.getWeapon().getStabHit();
 				}
 				break;
- 
+
 			case "throw weapon": // attack == throw weapon (get rid of it)
 				ran = new Random().nextDouble();
 				if (ran >= attackerStats.getThrowWeaponChance()) {
 					if (who.equals("hero")) {
 						System.out.println(
-								"You tried to throw your weapon, but it was a girly throw. Now you are left with your bare hands only.");
+								rs.getString("playerThrowFail"));
 					} else {
 						System.out.println(
-								"A desperate situation leads to desperate actions. Your tired opponent tried to throw a weapon at you, but how can this peasant hurt a warrior as great as you??");
+								rs.getString("opponentThrowFail"));
 					}
 				} else {
 					if (who.equals("hero")) {
 						System.out.println(
-								"WHAT A THROW! Despite the fact that you are now left with your bare hands only, your thrw caused serious damage to your opponent.");
+								rs.getString("playerThrowHit"));
 					} else {
 						System.out.println(
-								"Despite being almot dead, this warrior tried to throw his weapon at you and he did not miss. Did you think it was going to be an easy win?");
+								rs.getString("opponentThrowHit"));
 					}
 					damage = attacker.getWeapon().getThrowHit();
-					if (!(attacker.getWeapon().getName().equals("A boomerang"))) { // boomerang always returns after throwing
-						attacker.setWeapon(new Weapon("Bare hands"));  // bare hands after you throw away your weapon
+					if (!(attacker.getWeapon().getName().equals("A boomerang"))) { // boomerang always returns after
+																					// throwing
+						attacker.setWeapon(new Weapon("Bare hands")); // bare hands after you throw away your weapon
 					}
 				}
 				break;
@@ -330,8 +328,9 @@ public class Arena {
 			return defender.damage(damage);
 		}
 
-		/** 
+		/**
 		 * Contains chances on successful attack/defence
+		 * 
 		 * @author Andrej
 		 *
 		 */
@@ -351,6 +350,7 @@ public class Arena {
 
 			/**
 			 * create attack/defence indexes
+			 * 
 			 * @param p
 			 */
 			protected FightStats(Person p) {
@@ -368,6 +368,7 @@ public class Arena {
 
 			/**
 			 * create success percentages to attackers
+			 * 
 			 * @param otherGuy
 			 */
 			protected void percentages(FightStats otherGuy) {
@@ -445,11 +446,11 @@ public class Arena {
 			@Override
 			public String toString() {
 				StringBuilder sb = new StringBuilder();
-				sb.append("stab chance: ");
+				sb.append(rs.getString("stabChance"));
 				sb.append((int) stabChance * 100);
-				sb.append("%, slash chance: ");
+				sb.append(rs.getString("slashChance"));
 				sb.append((int) slashChance * 100);
-				sb.append("%, throw weapon chance: ");
+				sb.append(rs.getString("throwChance"));
 				sb.append((int) throwWeaponChance * 100);
 				sb.append("%");
 				return sb.toString();
@@ -457,10 +458,9 @@ public class Arena {
 		}
 	}
 
-	//testing main
+	// testing main
 	/*
-	public static void main(String[] args) {
-		Arena a = new Arena(new Hero("John", "att"), new Scanner(System.in));
-		a.startFight(false);
-	} */
+	 * public static void main(String[] args) { Arena a = new Arena(new Hero("John",
+	 * "att"), new Scanner(System.in)); a.startFight(false); }
+	 */
 }

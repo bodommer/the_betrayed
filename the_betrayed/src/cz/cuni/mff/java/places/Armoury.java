@@ -1,11 +1,12 @@
 package cz.cuni.mff.java.places;
 
 import java.util.HashMap;
-import java.util.Scanner;
+import java.util.ResourceBundle;
 import java.util.Set;
 
 import cz.cuni.mff.java.character.Hero;
 import cz.cuni.mff.java.equipment.Armour;
+import cz.cuni.mff.java.main.Controller;
 import cz.cuni.mff.java.main.Input;
 import cz.cuni.mff.java.main.MyFileReader;
 
@@ -22,44 +23,45 @@ public class Armoury {
 	 * Read ArmourList to see what options there are for purchase.
 	 * 
 	 * @param hero
-	 * @param scanner
 	 */
-	public static void shop(Hero hero, Scanner scanner) {
-		System.out.println("Welcome to the shop! ");
+	public static void shop(Hero hero) {
+		ResourceBundle rs = Controller.getController().getResourceBundle();
+		System.out.println(rs.getString("armouryWelcome"));
 		HashMap<String, Integer> attr = new HashMap<String, Integer>();
 
 		// show options
 		MyFileReader mfr = new MyFileReader("equipment", "ArmourList");
 		String[] options = mfr.readAndSeparateLine();
-		System.out.println("Here is our inventory of armour, which you do not own yet:");
+		System.out.println(rs.getString("armouryOffer"));
 		Set<String> armour = hero.getArmourSet();
+		String itemOption = rs.getString("armouryOption");
 		for (int i = 1; i < options.length - 1; i++) {
 			String[] data = mfr.readAndSeparateLine();
 			if (!(armour.contains(options[i]))) {
-				System.out.printf("Option %s: %s, %s coins. Defence: %s, Weight: %s, Description: %s\n", data[4],
+				System.out.printf(itemOption, data[4],
 						data[0], data[5], data[1], data[2], data[3]);
 				attr.put(data[4], Integer.parseInt(data[5]));
 			}
 		}
 		mfr = null;
-		System.out.printf("Do you want to buy something, or exit? You currently have %d coins.\n", hero.getCoins());
+		System.out.printf(rs.getString("armouryPrompt"), hero.getCoins());
 		Set<String> inputOptions = attr.keySet();
 		inputOptions.add("exit");
 
 		while (true) {
-			String input = Input.get(inputOptions, scanner);
+			String input = Input.get(inputOptions);
 			if (!(input.equals("exit"))) {
 				if (hero.getCoins() >= attr.get(input)) {
 					hero.addArmour(input);
 					hero.spendCoins(attr.get(input));
 					System.out.printf(
-							"You have successfully bought a new shiny piece of armour! You now have %d coins.",
+							rs.getString("armouryPurchase"),
 							hero.getCoins());
 					hero.setArmour(new Armour(input));
 					attr.remove(input);
 					inputOptions.remove(input);
 				} else {
-					System.out.println("You have not got enough coins for this armour! Try something else!");
+					System.out.println(rs.getString("armouryNotEnoughMoney"));
 				}
 			} else {
 				return;

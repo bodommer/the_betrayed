@@ -1,82 +1,76 @@
 package cz.cuni.mff.java.places;
 
 import java.util.Arrays;
-import java.util.List;
-import java.util.Scanner;
+import java.util.ResourceBundle;
 
 import cz.cuni.mff.java.character.Hero;
+import cz.cuni.mff.java.main.Controller;
+import cz.cuni.mff.java.main.Input;
 
 /**
- * There are only static methods in this class; here a user can spend hero's experience points (XP) to improve his attributes.
+ * There are only static methods in this class; here a user can spend hero's
+ * experience points (XP) to improve his attributes.
+ * 
  * @author Andrej
  *
  */
 public class TrainingGround {
-	
+
 	/**
-	 * THis method is called when entering the Training Ground.
-	 * @param hero 
+	 * This method is called when entering the Training Ground.
+	 * 
+	 * @param hero
 	 * @param scanner
 	 */
-	public static void levelUp(Hero hero, Scanner scanner) {
+	public static void levelUp(Hero hero) {
+		ResourceBundle rs = Controller.getController().getResourceBundle();
 		boolean stay = true;
-		System.out.println(
-				"Welcome to the training ground! Here you can use your experience points to upgrade your fighting stats.");
-		//if stay == false - leave training ground
+		System.out.println(rs.getString("trainingWelcome"));
+		// if stay == false - leave training ground
 		while (stay) {
-			printOptions(hero);
-			stay = getAnswer(scanner, hero);
+			printOptions(hero, rs);
+			stay = getAnswer(hero, rs);
 		}
 	}
 
 	/**
 	 * Shows options and price for each upgrade.
+	 * 
 	 * @param hero
 	 */
-	private static void printOptions(Hero hero) {
-		System.out.printf("You have %d XP to use.\n", hero.getXP());
-		System.out.printf("Your attack level is %d and the next level will cost you %d XP.\n", hero.getAttack(),
+	private static void printOptions(Hero hero, ResourceBundle rs) {
+		System.out.printf(rs.getString("trainingXP"), hero.getXP());
+		System.out.printf(rs.getString("trainingAttack"), hero.getAttack(),
 				hero.getAttack() * 50);
-		System.out.printf("Your defence level is %d and the next level will cost you %d XP.\n", hero.getDefence(),
+		System.out.printf(rs.getString("trainingDefence"), hero.getDefence(),
 				hero.getDefence() * 50);
-		System.out.printf("Your reflexes level is %d and the next level will cost you %d XP.\n", hero.getReflexes(),
+		System.out.printf(rs.getString("trainingReflexes"), hero.getReflexes(),
 				hero.getReflexes() * 50);
-		System.out.printf("Your strength level is %d and the next level will cost you %d XP.\n", hero.getStrength(),
+		System.out.printf(rs.getString("trainingStrength"), hero.getStrength(),
 				hero.getStrength() * 50);
-		System.out.printf("Your HP level is %d and the next level will cost you %d XP.\n", hero.getHP(),
+		System.out.printf(rs.getString("trainingHP"), hero.getHP(),
 				hero.getHP() * 5);
-		System.out.println("What do you want to do now? Enter skill you want to improve, or exit");
+		System.out.println(rs.getString("trainingPrompt"));
 	}
 
 	/**
 	 * Gets command from the user and analyses it.
+	 * 
 	 * @param scanner
 	 * @param hero
 	 * @return
 	 */
-	private static boolean getAnswer(Scanner scanner, Hero hero) {
-		String input;
-		List<String> options = Arrays.asList("attack", "defence", "reflexes", "strength", "hp", "exit");
-
-		while (true) {
-			input = scanner.nextLine();
-			if (options.contains(input)) {
-				break;
-			} else {
-				System.out.println("Invalid command");
-			}
-		}
-
+	private static boolean getAnswer(Hero hero, ResourceBundle rs) {
+		String input = Input.get(Arrays.asList("attack", "defence", "reflexes", "strength", "hp", "exit"));
 		switch (input) {
 		case "exit":
 			return false;
 		default:
 			if (hero.spendXP(input)) {
-				System.out.println("Your skills were successfully upgraded!");
+				System.out.println(rs.getString("trainingUpgrade"));
 			} else {
-				System.out.println("You have not got enough XP for this!");
+				System.out.println(rs.getString("trainingNotEnoughXP"));
 			}
-			System.out.println("Skill successfully upgraded!");
 		}
 		return true;
 	}
