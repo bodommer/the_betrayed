@@ -84,7 +84,7 @@ public class Arena {
 		} else { // version where opponent starts first
 			System.out.println(rs.getString("opponentStartsBattle"));
 			while (!(end)) {
-				System.out.println(rs.getString("playerTurn"));
+				System.out.println(rs.getString("opponentTurn"));
 				try {
 					TimeUnit.SECONDS.sleep(1);
 					end = fight.opponentTurn();
@@ -210,9 +210,9 @@ public class Arena {
 		protected boolean heroTurn() {
 			String[] options;
 			if (hero.getWeapon().getName().equals("Bare hands")) {
-				options = new String[] {"punch", "slap"};
+				options = new String[] {"punch", "slap"}; //TODO put into enum + fix localisation
 			} else {
-				options = new String[] {"slash", "stab", "throw weapon"};
+				options = new String[] {"slash", "stab", "throwWeapon"};
 			}
 			if (options.length == 2) {
 				System.out.println(rs.getString("bareHandsOptions"));

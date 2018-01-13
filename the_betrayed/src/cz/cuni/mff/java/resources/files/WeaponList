@@ -1,11 +1,11 @@
 Bare hands;A toothpick;An arrow;An anvil;Tiny hammer;A broken Spear;A boomerang;Your mom's spoon;A wooden scimitar
-Bare hands;1;1;Your hands, take it or leave it;1;2;1;2;1;1;-no name;0
+Bare hands;1;1;Your hands, take it or leave it;1;2;1;2;1;1;hands;0
 A toothpick;2;1;A solid wooden toothpick handmade by the golden arms of Soviet workers;1;2;2;3;2;4;toothpick;30
 An arrow;3;2;Who needs a bow? Slash, stab or throw? Always lethal. A great option!;2;3;3;4;6;7;arrow;60
 An anvil;3;4;Iron is always painful. An anvil-shaped boxer? You always want to avoid it. Ouch!;4;5;3;3;5;8;anvil;100
 Tiny hammer;4;5;This may not be the lightest weapon ever made. Used by the Vikings, it is now made in XS size for ordinary warriors.;6;9;3;3;8;11;hammer;140
 A broken Spear;4;3;A broken spear is basically just a stick. However, if you use some of your creativity, you will be unbeatable!;5;7;7;9;10;12;spear;200
-A boomerang;5;3;A good friend always returns, right? So does your boomerang. Lame slash, lame stab, but unlimited throws! Imagine the options...;2;4;3;5;10;14;boomerang;250
+A boomerang;5;3;A good friend always returns, right? So does your boomerang. Lame slash, lame stab, but unlimited throws! Imagine the opportunities...;2;4;3;5;10;14;boomerang;250
 Your mom's spoon;7;2;Nobody wants to mess with this. Some warriors run away just after seeing your weapon of destruction. Use wisely, can cause great injuries.;9;11;5;8;10;10;spoon;290
 
 FORMAT: line 1: ordered list of weapons by command name
