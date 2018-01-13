@@ -1,0 +1,9 @@
+A paper;A carton;Wooden shield;Iron armour;Steel armour
+A paper;1;1;It is a paper. Does not really provide any defence, but it looks like a shield!;paper;20
+A carton;2;1;A lightweight armour, which can protect you a little bit. Very light!;carton;70
+Wooden shield;3;2;A wooden shield is very solid. Not the ultimate solution, but affordable!;wooden shield;160
+Iron armour;6;10;A heavy-weight armour that will make you immortal. You cannot get killed in this one...unless you get killed.;iron armour;330
+Steel armour;10;9;A stronger and lighter version of the iron armour. This is a real warrior's choice.;steel armour;510
+
+FORMAT: line 1: list of armour names(ordered) according to command name, then each line:
+		name;defence;weight;description;command name;price
