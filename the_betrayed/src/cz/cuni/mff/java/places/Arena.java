@@ -1,8 +1,5 @@
 package cz.cuni.mff.java.places;
 
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
 import java.util.Random;
 import java.util.ResourceBundle;
 import java.util.concurrent.TimeUnit;
@@ -211,18 +208,18 @@ public class Arena {
 		 *         move.
 		 */
 		protected boolean heroTurn() {
-			List<String> list;
+			String[] options;
 			if (hero.getWeapon().getName().equals("Bare hands")) {
-				list = Arrays.asList("punch", "slap");
+				options = new String[] {"punch", "slap"};
 			} else {
-				list = Arrays.asList("slash", "stab", "throw weapon");
+				options = new String[] {"slash", "stab", "throw weapon"};
 			}
-			if (list.size() == 2) {
+			if (options.length == 2) {
 				System.out.println(rs.getString("bareHandsOptions"));
 			} else {
 				System.out.println(rs.getString("weaponOptions"));
 			}
-			return performAttack("hero", Input.get(new HashSet<String>(list)));
+			return performAttack("hero", Input.get(options));
 		}
 
 		/**

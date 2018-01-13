@@ -1,9 +1,9 @@
 package cz.cuni.mff.java.places;
 
-import java.util.Arrays;
 import java.util.ResourceBundle;
 
 import cz.cuni.mff.java.character.Hero;
+import cz.cuni.mff.java.inputOptions.Options;
 import cz.cuni.mff.java.main.Controller;
 import cz.cuni.mff.java.main.Input;
 
@@ -61,7 +61,7 @@ public class TrainingGround {
 	 * @return
 	 */
 	private static boolean getAnswer(Hero hero, ResourceBundle rs) {
-		String input = Input.get(Arrays.asList("attack", "defence", "reflexes", "strength", "hp", "exit"));
+		String input = Input.get(Options.TRAINING.getOptions());
 		switch (input) {
 		case "exit":
 			return false;

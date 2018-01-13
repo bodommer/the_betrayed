@@ -3,8 +3,8 @@
  */
 package cz.cuni.mff.java.main;
 
-import java.util.Collection;
-import java.util.HashMap;
+import java.util.Arrays;
+import java.util.List;
 import java.util.ResourceBundle;
 import java.util.Scanner;
 
@@ -26,21 +26,21 @@ public class Input {
 	 *            - a scanner from where input shall be gotten
 	 * @return - returns the option from 'col' which was input by the user
 	 */
-	public static String get(Collection<String> col) {
+	public static String get(String[] keys) {
 		ResourceBundle rs = Controller.getController().getResourceBundle();
-		HashMap<String, String> map = new HashMap<String, String>();
+		List<String> values = Arrays.asList();
 		Scanner scanner = Controller.getController().getScanner();
 
-		for (String s : col) {
-			map.put(Controller.getController().getResourceBundle().getString(s), s);
+		for (String s : keys) {
+			values.add(rs.getString(s));
 		}
 
-		System.out.printf(rs.getString("inputOptions"), String.join(", ", map.keySet()));
+		System.out.printf(rs.getString("inputOptions"), String.join(", ", values));
 		String input;
 		while (true) {
 			input = scanner.nextLine().trim();
-			if (map.keySet().contains(input)) {
-				return map.get(input);
+			if (values.contains(input)) {
+				return keys[values.indexOf(input)];
 			} else {
 				System.out.println(rs.getString("inputInvalidCommand"));
 			}

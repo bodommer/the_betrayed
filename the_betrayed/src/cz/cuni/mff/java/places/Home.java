@@ -1,7 +1,6 @@
 package cz.cuni.mff.java.places;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.ResourceBundle;
 import java.util.Set;
@@ -10,6 +9,7 @@ import java.util.stream.Collectors;
 import cz.cuni.mff.java.character.Hero;
 import cz.cuni.mff.java.equipment.Armour;
 import cz.cuni.mff.java.equipment.Weapon;
+import cz.cuni.mff.java.inputOptions.Options;
 import cz.cuni.mff.java.main.Controller;
 import cz.cuni.mff.java.main.Input;
 import cz.cuni.mff.java.main.MyFileReader;
@@ -53,18 +53,18 @@ public class Home {
 		while (true) {
 			System.out
 					.println(rs.getString("homePrompt1"));
-			String answer = Input.get(Arrays.asList("See weapons", "see armour", "change weapon", "change armour","exit"));
+			String answer = Input.get(Options.HOME.getOptions());
 			switch (answer) {
-			case "see weapons":
+			case "seeWeapons":
 				seeWeapons();
 				break;
-			case "see armour":
+			case "seeArmour":
 				seeArmour();
 				break;
-			case "change weapon":
+			case "changeWeapon":
 				changeWeapon();
 				break;
-			case "change armour":
+			case "changeArmour":
 				changeArmour();
 				break;
 			case "exit":
@@ -116,8 +116,10 @@ public class Home {
 		System.out.printf(rs.getString("homeWeapons"),
 				new ArrayList<String>(heroWeapons).stream().collect(Collectors.joining(", ")));
 		System.out.println(rs.getString("homeWeaponChoice"));
-		heroWeapons.add("exit");
-		String answer = Input.get(heroWeapons);
+		String[] o = new String[heroWeapons.size() + 1];
+		heroWeapons.toArray(o);
+		o[heroWeapons.size()] = "exit";
+		String answer = Input.get(o);
 		if (!(answer.equals("exit"))) {
 			hero.setWeapon(new Weapon(weapons.get(answer)));
 			System.out.printf(rs.getString("homeWeaponChosen"), weapons.get(answer));
@@ -132,8 +134,10 @@ public class Home {
 		System.out.printf(rs.getString("homeArmours"),
 				new ArrayList<String>(heroArmours).stream().collect(Collectors.joining(", ")));
 		System.out.println(rs.getString("homeAmrourChoice"));
-		heroArmours.add("exit");
-		String answer = Input.get(heroArmours);
+		String[] o = new String[heroArmours.size() + 1];
+		heroArmours.toArray(o);
+		o[heroArmours.size()] = "exit";
+		String answer = Input.get(o);
 		if (!(answer.equals("exit"))) {
 			hero.setArmour(new Armour(armours.get(answer)));
 			System.out.printf(rs.getString("homeArmourChosen"), armours.get(answer));

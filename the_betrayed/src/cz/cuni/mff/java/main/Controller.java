@@ -6,14 +6,13 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.util.Arrays;
-import java.util.List;
 import java.util.Locale;
 import java.util.ResourceBundle;
 import java.util.Scanner;
 import java.util.prefs.Preferences;
 
 import cz.cuni.mff.java.character.Hero;
+import cz.cuni.mff.java.inputOptions.Options;
 import cz.cuni.mff.java.places.Arena;
 import cz.cuni.mff.java.places.Armoury;
 import cz.cuni.mff.java.places.Home;
@@ -74,7 +73,7 @@ public class Controller {
 	 */
 	private void gameMenu() {
 		System.out.println(rs.getString("gameMenu"));
-		switch (Input.get(Arrays.asList("fight", "visitArmoury", "visitWeaponsShop", "levelUp", "visitHome", "save", "menu", "help", "exit"))) {
+		switch (Input.get(Options.GAME_MENU.getOptions())) {
 		case "fight":
 			boolean boss = false;
 			if (hero.getFight() % 6 == 5) {
@@ -129,8 +128,7 @@ public class Controller {
 		System.out.println(rs.getString("getName"));
 		String name = scanner.nextLine();
 		System.out.println(rs.getString("getSkillset"));
-		List<String> options = Arrays.asList("attack", "defence", "reflexes");
-		hero = new Hero(name, Input.get(options));
+		hero = new Hero(name, Input.get(Options.SKILLSET.getOptions()));
 		System.out.println(rs.getString("heroCreated"));
 		arena = new Arena(hero);
 	}
@@ -140,7 +138,7 @@ public class Controller {
 	 */
 	private void mainMenu() {
 		System.out.println(rs.getString("mainMenu"));
-		switch (Input.get(Arrays.asList("newGame", "load", "help", "changeLanguage", "exit"))) {
+		switch (Input.get(Options.MAIN_MENU.getOptions())) {
 		case "newGame": // start a new game and enter game menu
 			startProcedure();
 			exit = 1; // set menu to game menu
@@ -165,7 +163,7 @@ public class Controller {
 
 	private void saveGame() {
 		System.out.println(rs.getString("saveQuestion"));
-		if (Input.get(Arrays.asList("yes", "no")).equals("no")) {
+		if (Input.get(Options.YES_NO.getOptions()).equals("no")) {
 			System.out.println(rs.getString("gameNotSaved"));
 			return;
 		}
@@ -206,7 +204,7 @@ public class Controller {
 	private void languageSelection() {
 		System.out.println(rs.getString("availableLanguages"));
 		System.out.println("en: English\nsk: Slovenčina");
-		String choice = Input.get(Arrays.asList("en", "sk", "exit"));
+		String choice = Input.get(Options.LANGUAGES.getOptions());
 		if (!(choice.equals("exit"))) {
 			Preferences prefs = Prefs.getPrefs();
 			if (!(prefs.get("language", null).equals(choice))) {

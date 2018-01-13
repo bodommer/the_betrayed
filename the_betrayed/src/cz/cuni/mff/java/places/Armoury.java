@@ -43,13 +43,15 @@ public class Armoury {
 				attr.put(data[4], Integer.parseInt(data[5]));
 			}
 		}
-		mfr = null;
+		mfr.close();
 		System.out.printf(rs.getString("armouryPrompt"), hero.getCoins());
 		Set<String> inputOptions = attr.keySet();
-		inputOptions.add("exit");
+		String[] o = new String[inputOptions.size() + 1];
+		inputOptions.toArray(o);
+		o[inputOptions.size()] = "exit";
 
 		while (true) {
-			String input = Input.get(inputOptions);
+			String input = Input.get(o);
 			if (!(input.equals("exit"))) {
 				if (hero.getCoins() >= attr.get(input)) {
 					hero.addArmour(input);
