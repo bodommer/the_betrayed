@@ -8,8 +8,11 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.Locale;
+import java.util.ResourceBundle;
 import java.util.Scanner;
 import java.util.Set;
+import java.util.prefs.Preferences;
 
 import cz.cuni.mff.java.character.Hero;
 import cz.cuni.mff.java.places.Arena;
@@ -32,13 +35,15 @@ public class Controller {
 	private Scanner scanner;
 	private Arena arena;
 	private int exit = 2;
-
+	ResourceBundle rs; 	
+	
 	/**
 	 * The Controller constructor. It can be gained only from public getController()
 	 * method.
 	 */
 	private Controller() {
 		scanner = new Scanner(System.in);
+		setLanguage();
 	}
 
 	/**
@@ -46,7 +51,7 @@ public class Controller {
 	 * of the program. It has three states - Main menu, Game menu and Exit
 	 */
 	private void startGame() {
-		System.out.println("Welcome to the game! What do you wish to start with?");
+		System.out.println(rs.getString("intro"));
 		while (true) {
 			if (exit == 2) {
 				mainMenu();
@@ -149,8 +154,8 @@ public class Controller {
 	 * Controls the Main menu and its commands.
 	 */
 	private void mainMenu() {
-		System.out.println("Main menu options: new game, load, help, language, exit.");
-		switch (Input.get(new HashSet<String>(Arrays.asList("new game", "load", "help", "language", "exit")),
+		System.out.println("Main menu options: new game, load, help, change language, exit.");
+		switch (Input.get(new HashSet<String>(Arrays.asList("new game", "load", "help", "change language", "exit")),
 				scanner)) {
 		case "new game": // start a new game and enter game menu
 			startProcedure();
@@ -163,8 +168,8 @@ public class Controller {
 		case "help":
 			// show options
 			break;
-		case "language":
-			// show language options, expect language options
+		case "change language":
+			languageSelection();
 			break;
 		case "exit":
 			exit = 0;
@@ -214,7 +219,52 @@ public class Controller {
 	public static Controller getController() {
 		return controller;
 	}
+	
+	private void languageSelection() {
+		System.out.println(rs.getString("availableLanguages"));
+		System.out.println("en: English\nsk: Slovenčina");
+		String choice = Input.get(new HashSet<String>(Arrays.asList("en", "sk", "exit")), scanner);
+		if (!(choice.equals("exit"))) {
+			Preferences prefs = Prefs.getPrefs();
+			if (!(prefs.get("language", null).equals(choice))) {
+				prefs.put("language", choice);
+				setLanguage();
+				System.out.println(rs.getString("languageChanged"));
+			}
+		}
+	}
+	
+	private void setLanguage() {
+		Preferences prefs = Prefs.getPrefs();
+		if (prefs.get("language", null) == null) {
+			Locale l = Locale.getDefault();
+			if (l.toString().equals("sk-SK") || l.toString().equals("cs-CZ")) {
+				prefs.put("language", "sk");
+			} else {
+				prefs.put("language", "en");
+			}
+		} 
+		String lang = prefs.get("language", null);
+		Locale loc;
+		if (lang.equals("sk")) {
+			loc = new Locale("sk");
+		} else {
+			loc = Locale.ENGLISH;
+		}
+		setResourceBundle(loc);
+	}
+	
+	private void setResourceBundle(Locale loc) {
+		rs = ResourceBundle.getBundle("cz.cuni.mff.java.resources.localization.resource", loc);
+	}
+	
+	public ResourceBundle getResourceBundle() {
+		return rs;
+	}
 
+	public Scanner getScanner() {
+		return scanner;
+	}
 	/**
 	 * Game launcher.
 	 * 

@@ -1,7 +1,9 @@
 package cz.cuni.mff.java.places;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Scanner;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -50,9 +52,9 @@ public class Home {
 		System.out.println("Welcome home!");
 		while (true) {
 			System.out
-					.println("What do you want to do? See weapons, see armour, change weapon, change armour, or exit?");
-			String input = scanner.nextLine();
-			switch (input) {
+					.println("What do you want to do?");
+			String answer = Input.get(new HashSet<String>(Arrays.asList("See weapons", "see armour", "change weapon", "change armour","exit")), scanner);
+			switch (answer) {
 			case "see weapons":
 				seeWeapons();
 				break;
