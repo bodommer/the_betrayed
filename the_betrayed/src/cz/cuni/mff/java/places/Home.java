@@ -133,7 +133,7 @@ public class Home {
 		if (!(answer.equals("exit"))) {
 			hero.setArmour(new Armour(armours.get(answer)));
 			System.out.printf("You are now wearing %s.\n", armours.get(answer));
-		} 
+		}
 		heroArmours.remove("exit");
 	}
 }
