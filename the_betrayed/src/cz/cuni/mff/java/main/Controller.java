@@ -125,6 +125,8 @@ public class Controller {
 	 * New game procedure - setting hero's name, attributes etc.
 	 */
 	private void startProcedure() {
+		System.out.println(rs.getString("introText"));
+		System.out.println(rs.getString("controlsInfo"));
 		System.out.println(rs.getString("getName"));
 		String name = scanner.nextLine();
 		System.out.println(rs.getString("getSkillset"));

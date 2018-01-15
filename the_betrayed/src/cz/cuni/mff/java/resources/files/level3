@@ -1,13 +1,14 @@
-John Cena
-Vladimir Klitschko
-Ragnar Lothbrok
-Sylvester Stallone
-Jackie Chan
-Vin Diesel
-..
-..
-..
-..
-Chuck Norris
+Vin Diesel;1;1;1;1;10;hands;carton
+Jackie Chan;3;1;1;2;15;hands;paper
+Sylvester Stallone;2;1;2;1;17;hands;shield
+Ragnar Lothbrok;2;2;1;2;12;anvil;paper
+John Cena;2;2;2;2;11;toothpick;carton
+Vladimir Putin;2;1;1;2;18;hands;shield
+Liam Neeson;2;1;2;2;14;toothpick;paper
+Jean-Claude Van Damme;1;2;2;1;16;anvil;carton
+Tom Cruise;2;2;2;2;15;hands;paper
+Santa Claus;1;2;2;2;13;toothpick;carton
+Chuck Norris;2;3;2;3;22;arrow;shield
+
 
 FORMAT: name;attack;defence;reflexes;strength;hp;weapon;armour
