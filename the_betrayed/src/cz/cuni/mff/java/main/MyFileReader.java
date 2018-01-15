@@ -28,7 +28,7 @@ public class MyFileReader {
 
 		String url = sb.toString();
 		// System.out.println(url);*/
-		in = new BufferedReader(new InputStreamReader(getClass().getResourceAsStream("/cz/cuni/mff/java/resources/files/" + file)));
+		in = new BufferedReader(new InputStreamReader(getClass().getResourceAsStream("/files/" + file)));
 	}
 
 	/**

@@ -237,7 +237,7 @@ public class Controller {
 	}
 	
 	private void setResourceBundle(Locale loc) {
-		rs = ResourceBundle.getBundle("cz.cuni.mff.java.resources.localization.resource", loc);
+		rs = ResourceBundle.getBundle("localization.resource", loc);
 	}
 	
 	public ResourceBundle getResourceBundle() {
