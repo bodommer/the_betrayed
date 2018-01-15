@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Random;
 
+import cz.cuni.mff.java.main.Controller;
 import cz.cuni.mff.java.main.MyFileReader;
 
 /**
@@ -14,7 +15,7 @@ import cz.cuni.mff.java.main.MyFileReader;
 public class Weapon implements Serializable {
 
 	private static final long serialVersionUID = 5;
-	private String name;
+	private String code;
 	private int attack;
 	private int weight;
 	private int slashMin;
@@ -23,14 +24,13 @@ public class Weapon implements Serializable {
 	private int stabMax;
 	private int throwMin;
 	private int throwMax;
-	private String description;
 
 	/**
 	 * The constructor. It self-assesses own attributes only from its own name (reads WeaponList file and analyses the data).
 	 * @param name
 	 */
-	public Weapon(String name) {
-		this.name = name;
+	public Weapon(String code) {
+		this.code = code;
 		loadData();
 	}
 
@@ -38,17 +38,16 @@ public class Weapon implements Serializable {
 	 * Reads the WeaponList and self-assesses attributes.
 	 */
 	private void loadData() {
-		MyFileReader mfr = new MyFileReader("equipment", "WeaponList");
-		int index = Arrays.asList(mfr.readAndSeparateLine()).indexOf(name);
+		MyFileReader mfr = new MyFileReader("WeaponList");
+		int index = Arrays.asList(mfr.readAndSeparateLine()).indexOf(code);
 		for (int i = 0; i < index; i++) {
 			mfr.readLine();
 		}
 		String[] attr = mfr.readAndSeparateLine();
 		setAttack(Integer.parseInt(attr[1]));
 		setWeight(Integer.parseInt(attr[2]));
-		setDescription(attr[3]);
-		setWeaponRanges(Integer.parseInt(attr[4]), Integer.parseInt(attr[5]), Integer.parseInt(attr[6]),
-				Integer.parseInt(attr[7]), Integer.parseInt(attr[8]), Integer.parseInt(attr[9]));
+		setWeaponRanges(Integer.parseInt(attr[3]), Integer.parseInt(attr[4]), Integer.parseInt(attr[5]),
+				Integer.parseInt(attr[6]), Integer.parseInt(attr[7]), Integer.parseInt(attr[8]));
 		mfr = null;
 	}
 
@@ -66,14 +65,6 @@ public class Weapon implements Serializable {
 
 	public int getWeight() {
 		return weight;
-	}
-
-	private void setDescription(String s) {
-		description = s;
-	}
-
-	public String getDescription() {
-		return description;
 	}
 
 	/**
@@ -131,13 +122,13 @@ public class Weapon implements Serializable {
 		return slashMax; 	
 	}
 	
-	public String getName() {
-		return name;
+	public String getCode() {
+		return code;
 	}
 
 	@Override
 	public String toString() {
-		return name;
+		return Controller.getController().getResourceBundle().getString(code+"N");
 	}
 
 	// testing main method

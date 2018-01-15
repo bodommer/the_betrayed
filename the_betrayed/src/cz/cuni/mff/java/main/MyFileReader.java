@@ -1,9 +1,8 @@
 package cz.cuni.mff.java.main;
 
 import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 
 /**
  * This class is responsible for reading files with Buffered Reader.
@@ -22,25 +21,14 @@ public class MyFileReader {
 	 * @param file
 	 *            - what is the file name?
 	 */
-	public MyFileReader(String folder, String file) {
-		try {
-			StringBuilder sb = new StringBuilder().append(new File(new File(".").getAbsolutePath()).getCanonicalPath());
-			// StringBuilder sb = new StringBuilder().append(".");
-			/*
-			 * sb.append(File.separator); sb.append("src"); sb.append(File.separator);
-			 * sb.append("cz"); sb.append(File.separator); sb.append("cuni");
-			 * sb.append(File.separator); sb.append("mff"); sb.append(File.separator);
-			 * sb.append("java"); sb.append(File.separator); sb.append(folder);
-			 */
-			sb.append(File.separator);
-			sb.append(file);
+	public MyFileReader(String file) {
+		/*StringBuilder sb = new StringBuilder().append(new File(new File(".").getAbsolutePath()).getCanonicalPath());
+		sb.append(File.separator);
+		sb.append(file);
 
-			String url = sb.toString();
-			// System.out.println(url);
-			in = new BufferedReader(new FileReader(url));
-		} catch (IOException io) {
-			System.out.println("ERROR");
-		}
+		String url = sb.toString();
+		// System.out.println(url);*/
+		in = new BufferedReader(new InputStreamReader(getClass().getResourceAsStream("/cz/cuni/mff/java/resources/files/" + file)));
 	}
 
 	/**
@@ -74,5 +62,8 @@ public class MyFileReader {
 			in.close();
 		} catch (IOException io) {
 		}
+	}
+	public static void main(String[] args) {
+		new MyFileReader("ArmourList");
 	}
 }

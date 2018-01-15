@@ -3,6 +3,7 @@ package cz.cuni.mff.java.equipment;
 import java.io.Serializable;
 import java.util.Arrays;
 
+import cz.cuni.mff.java.main.Controller;
 import cz.cuni.mff.java.main.MyFileReader;
 
 /**
@@ -14,10 +15,9 @@ import cz.cuni.mff.java.main.MyFileReader;
 public class Armour implements Serializable {
 
 	private static final long serialVersionUID = 4;
-	private String name;
+	private String code;
 	private int defence;
 	private int weight;
-	private String description;
 
 	/**
 	 * The constructor.
@@ -31,11 +31,10 @@ public class Armour implements Serializable {
 	 * @param description
 	 *            - a short description of the armour
 	 */
-	public Armour(String name, int defence, int weight, String description) {
-		this.name = name;
+	public Armour(String code, int defence, int weight, String description) {
+		this.code = code;
 		this.defence = defence;
 		this.weight = weight;
-		this.description = description;
 	}
 
 	/**
@@ -44,8 +43,8 @@ public class Armour implements Serializable {
 	 * @param name
 	 *            - name of the armour
 	 */
-	public Armour(String name) {
-		this.name = name;
+	public Armour(String code) {
+		this.code = code;
 		loadData();
 	}
 
@@ -54,15 +53,14 @@ public class Armour implements Serializable {
 	 * file and sets it to itself.
 	 */
 	private void loadData() {
-		MyFileReader mfr = new MyFileReader("equipment", "ArmourList");
-		int index = Arrays.asList(mfr.readAndSeparateLine()).indexOf(name);
+		MyFileReader mfr = new MyFileReader("ArmourList");
+		int index = Arrays.asList(mfr.readAndSeparateLine()).indexOf(code);
 		for (int i = 0; i < index; i++) {
 			mfr.readLine();
 		}
 		String[] attr = mfr.readAndSeparateLine();
 		setDefence(Integer.parseInt(attr[1]));
 		setWeight(Integer.parseInt(attr[2]));
-		setDescription(attr[3]);
 		mfr = null;
 	}
 
@@ -82,18 +80,10 @@ public class Armour implements Serializable {
 		return weight;
 	}
 
-	public void setDescription(String i) {
-		description = i;
-	}
-
-	public String getDescription() {
-		return description;
-	}
-
 	/**
 	 * Defence index of the armour applied for the hero.
 	 * @param strength - strength of the hero
-	 * @return a defense index
+	 * @return a defence index
 	 */
 	public double getDefIndex(int strength) {
 		return (defence - (0.4 - 0.01 * strength) * weight);
@@ -108,6 +98,6 @@ public class Armour implements Serializable {
 
 	@Override
 	public String toString() {
-		return name;
+		return Controller.getController().getResourceBundle().getString(code+"N");
 	}
 }

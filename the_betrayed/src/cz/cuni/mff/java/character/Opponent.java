@@ -22,7 +22,7 @@ public class Opponent extends Person {
 		
 		try {
 			String str = "level" + level;
-			mfr = new MyFileReader("character", str);
+			mfr = new MyFileReader(str);
 			for (int i = 0; i < line - 1; i++) {
 				mfr.readLine();
 			}

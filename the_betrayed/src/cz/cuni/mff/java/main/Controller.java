@@ -145,7 +145,6 @@ public class Controller {
 			break;
 		case "load":
 			loadSavedGame();
-			exit = 1;
 			break;
 		case "help":
 			// show options
@@ -184,6 +183,7 @@ public class Controller {
 			ois.close();
 			arena = new Arena(hero);
 			System.out.print(rs.getString("successfulLoad"));
+			exit = 1;
 		} catch (IOException e) {
 			System.out
 					.println(rs.getString("loadFailed"));

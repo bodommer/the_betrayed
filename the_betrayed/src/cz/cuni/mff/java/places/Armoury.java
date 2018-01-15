@@ -30,17 +30,17 @@ public class Armoury {
 		HashMap<String, Integer> attr = new HashMap<String, Integer>();
 
 		// show options
-		MyFileReader mfr = new MyFileReader("equipment", "ArmourList");
+		MyFileReader mfr = new MyFileReader("ArmourList");
 		String[] options = mfr.readAndSeparateLine();
 		System.out.println(rs.getString("armouryOffer"));
 		Set<String> armour = hero.getArmourSet();
 		String itemOption = rs.getString("armouryOption");
-		for (int i = 1; i < options.length - 1; i++) {
+		for (int i = 0; i < options.length; i++) {
 			String[] data = mfr.readAndSeparateLine();
 			if (!(armour.contains(options[i]))) {
-				System.out.printf(itemOption, data[4],
-						data[0], data[5], data[1], data[2], data[3]);
-				attr.put(data[4], Integer.parseInt(data[5]));
+				System.out.printf(itemOption, rs.getString(data[0]+"C"),
+						rs.getString(data[0]+"N"), data[3], data[1], data[2], rs.getString(data[0]+"D"));
+				attr.put(data[0]+"C", Integer.parseInt(data[3]));
 			}
 		}
 		mfr.close();
@@ -54,14 +54,16 @@ public class Armoury {
 			String input = Input.get(o);
 			if (!(input.equals("exit"))) {
 				if (hero.getCoins() >= attr.get(input)) {
-					hero.addArmour(input);
+					hero.addArmour(input.substring(0, input.length()-1));
 					hero.spendCoins(attr.get(input));
 					System.out.printf(
 							rs.getString("armouryPurchase"),
 							hero.getCoins());
-					hero.setArmour(new Armour(input));
-					attr.remove(input);
+					hero.setArmour(new Armour(input.substring(0, input.length()-1)));
 					inputOptions.remove(input);
+					inputOptions.toArray(o);
+					o[inputOptions.size()] = "exit";
+					o[inputOptions.size() + 1] = null;
 				} else {
 					System.out.println(rs.getString("armouryNotEnoughMoney"));
 				}

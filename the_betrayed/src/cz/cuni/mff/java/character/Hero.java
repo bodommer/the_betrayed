@@ -17,7 +17,7 @@ public class Hero extends Person {
 
 	private static final long serialVersionUID = 2;
 	private int score = 0;
-	private int coins = 1000;
+	private int coins = 0;
 	private int xp = 0;
 	private int level = 1;
 	private int kills = 0;
@@ -34,8 +34,8 @@ public class Hero extends Person {
 	public Hero(String name, String skillGroup) {
 		setName(name);
 		assignSkills(skillGroup);
-		addArmour("A paper");
-		addWeapon("Bare hands");
+		addArmour("paper");
+		addWeapon("hands");
 		
 	}
 

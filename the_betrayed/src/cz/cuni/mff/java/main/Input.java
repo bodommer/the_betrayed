@@ -3,7 +3,7 @@
  */
 package cz.cuni.mff.java.main;
 
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
 import java.util.Scanner;
@@ -28,11 +28,13 @@ public class Input {
 	 */
 	public static String get(String[] keys) {
 		ResourceBundle rs = Controller.getController().getResourceBundle();
-		List<String> values = Arrays.asList();
+		List<String> values = new ArrayList<String>();
 		Scanner scanner = Controller.getController().getScanner();
 
 		for (String s : keys) {
-			values.add(rs.getString(s));
+			if (s != null) {
+				values.add(rs.getString(s));
+			}
 		}
 
 		System.out.printf(rs.getString("inputOptions"), String.join(", ", values));

@@ -5,6 +5,7 @@ import java.util.ResourceBundle;
 import java.util.Set;
 
 import cz.cuni.mff.java.character.Hero;
+import cz.cuni.mff.java.equipment.Weapon;
 import cz.cuni.mff.java.main.Controller;
 import cz.cuni.mff.java.main.Input;
 import cz.cuni.mff.java.main.MyFileReader;
@@ -29,7 +30,7 @@ public final class WeaponsShop {
 		HashMap<String, Integer> attr = new HashMap<String, Integer>();
 
 		// load list of weapons and show what weapons a user can buy
-		MyFileReader mfr = new MyFileReader("equipment", "WeaponList");
+		MyFileReader mfr = new MyFileReader("WeaponList");
 		String[] options = mfr.readAndSeparateLine();
 		System.out.println(rs.getString("weaponShopOffer"));
 		Set<String> weapon = hero.getArmourSet();
@@ -38,8 +39,8 @@ public final class WeaponsShop {
 		for (int i = 1; i < options.length - 1; i++) {
 			String[] data = mfr.readAndSeparateLine();
 			if (!(weapon.contains(options[i]))) {
-				System.out.printf(itemOption, data[10], data[0], data[11], data[1], data[2], data[3]);
-				attr.put(rs.getString(data[10]), Integer.parseInt(data[11]));
+				System.out.printf(itemOption, rs.getString(data[0]+"C"), rs.getString(data[0]+"N"), data[9], data[1], data[2], rs.getString(data[0]+"D"));
+				attr.put(data[0]+"C", Integer.parseInt(data[9]));
 			}
 		}
 		mfr.close();
@@ -54,12 +55,15 @@ public final class WeaponsShop {
 			String input = Input.get(o);
 			if (!(input.equals("exit"))) {
 				if (hero.getCoins() >= attr.get(input)) {
-					hero.addWeapon(input);
+					hero.addWeapon(input.substring(0, input.length()-1));
 					hero.spendCoins(attr.get(input));
 					System.out.printf(rs.getString("weaponShopPurchase"), hero.getCoins());
 					System.out.println(rs.getString("weaponShopNextPrompt"));
-					attr.remove(input);
+					hero.setWeapon(new Weapon(input.substring(0, input.length()-1)));
 					inputOptions.remove(input);
+					inputOptions.toArray(o);
+					o[inputOptions.size()] = "exit";
+					o[inputOptions.size() + 1] = null;
 				} else {
 					System.out.println(rs.getString("weaponShopNotEnoughMoney"));
 				}

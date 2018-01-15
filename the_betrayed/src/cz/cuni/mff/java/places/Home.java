@@ -35,7 +35,7 @@ public class Home {
 	 * @param hero
 	 * @param scanner
 	 */
-	public Home(Hero hero) {
+public Home(Hero hero) {
 		this.hero = hero;
 		weapons = new HashMap<String, String>();
 		armours = new HashMap<String, String>();
@@ -79,15 +79,14 @@ public class Home {
 	 * Shows list of owned weapons with statistics.
 	 */
 	private void seeWeapons() {
-		MyFileReader mfr = new MyFileReader("equipment", "WeaponList");
-		int len = mfr.readLine().length();
+		MyFileReader mfr = new MyFileReader("WeaponList");
+		int len = mfr.readAndSeparateLine().length;
 		String item = rs.getString("homeWeaponList");
 		for (int i = 0; i < len; i++) {
 			String[] data = mfr.readAndSeparateLine();
-			if (heroWeapons.contains(data[10])) {
-				System.out.printf(item, data[10], data[0],
-						data[1], data[2], data[3]);
-				weapons.put(data[10], data[0]);
+			if (heroWeapons.contains(data[0])) {
+				System.out.printf(item, rs.getString(data[0]+"C"), rs.getString(data[0]+"N"),
+						data[1], data[2], rs.getString(data[0]+"D"));
 			}
 		}
 	}
@@ -96,15 +95,14 @@ public class Home {
 	 * Shows list of owned armours with statistics.
 	 */
 	private void seeArmour() {
-		MyFileReader mfr = new MyFileReader("equipment", "ArmourList");
-		int len = mfr.readLine().length();
+		MyFileReader mfr = new MyFileReader("ArmourList");
+		int len = mfr.readAndSeparateLine().length;
 		String item = rs.getString("homeArmourList");
 		for (int i = 0; i < len; i++) {
 			String[] data = mfr.readAndSeparateLine();
-			if (heroArmours.contains(data[4])) {
-				System.out.printf(item, data[4], data[0],
-						data[1], data[2], data[3]);
-				armours.put(data[4], data[0]);
+			if (heroArmours.contains(data[0])) {
+				System.out.printf(item, rs.getString(data[0]+"C"), rs.getString(data[0]+"N"),
+						data[1], data[2], rs.getString(data[0]+"D"));
 			}
 		}
 	}
@@ -114,15 +112,16 @@ public class Home {
 	 */
 	private void changeWeapon() {
 		System.out.printf(rs.getString("homeWeapons"),
-				new ArrayList<String>(heroWeapons).stream().collect(Collectors.joining(", ")));
+				new ArrayList<String>(heroWeapons).stream().map(s -> rs.getString(s+"N")).collect(Collectors.joining(", ")));
+		seeWeapons();
 		System.out.println(rs.getString("homeWeaponChoice"));
 		String[] o = new String[heroWeapons.size() + 1];
-		heroWeapons.toArray(o);
+		new ArrayList<String>(heroWeapons).stream().map(s -> s+"C").collect(Collectors.toList()).toArray(o);
 		o[heroWeapons.size()] = "exit";
 		String answer = Input.get(o);
 		if (!(answer.equals("exit"))) {
-			hero.setWeapon(new Weapon(weapons.get(answer)));
-			System.out.printf(rs.getString("homeWeaponChosen"), weapons.get(answer));
+			hero.setWeapon(new Weapon(answer.substring(0, answer.length()-1)));
+			System.out.printf(rs.getString("homeWeaponChosen"), hero.getWeapon().toString());
 		}
 		heroWeapons.remove("exit");
 	}
@@ -132,15 +131,16 @@ public class Home {
 	 */
 	private void changeArmour() {
 		System.out.printf(rs.getString("homeArmours"),
-				new ArrayList<String>(heroArmours).stream().collect(Collectors.joining(", ")));
-		System.out.println(rs.getString("homeAmrourChoice"));
+				new ArrayList<String>(heroArmours).stream().map(s->rs.getString(s+"N")).collect(Collectors.joining(", ")));
+		seeArmour();
+		System.out.println(rs.getString("homeArmourChoice"));
 		String[] o = new String[heroArmours.size() + 1];
-		heroArmours.toArray(o);
+		new ArrayList<String>(heroArmours).stream().map(s->s+"C").collect(Collectors.toList()).toArray(o);
 		o[heroArmours.size()] = "exit";
 		String answer = Input.get(o);
 		if (!(answer.equals("exit"))) {
-			hero.setArmour(new Armour(armours.get(answer)));
-			System.out.printf(rs.getString("homeArmourChosen"), armours.get(answer));
+			hero.setArmour(new Armour(answer.substring(0, answer.length()-1)));
+			System.out.printf(rs.getString("homeArmourChosen"), hero.getArmour().toString());
 		}
 		heroArmours.remove("exit");
 	}

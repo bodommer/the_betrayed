@@ -8,6 +8,7 @@ import cz.cuni.mff.java.character.Hero;
 import cz.cuni.mff.java.character.Opponent;
 import cz.cuni.mff.java.character.Person;
 import cz.cuni.mff.java.equipment.Weapon;
+import cz.cuni.mff.java.inputOptions.Options;
 import cz.cuni.mff.java.main.Controller;
 import cz.cuni.mff.java.main.Input;
 
@@ -53,10 +54,10 @@ public class Arena {
 		int start = new Random().nextInt(2); // 1 - hero starts, 0 - opponent starts
 		System.out.println(rs.getString("fightIntro"));
 		System.out.printf(rs.getString("heroFightInfo"), hero.getName(), hero.getAttack(), hero.getDefence(),
-				hero.getHP(), hero.getWeapon(), hero.getArmour(), fight.heroStats.toString());
+				hero.getHP(), hero.getWeapon().toString(), hero.getArmour().toString(), fight.heroStats.toString());
 		System.out.printf(rs.getString("opponentFightInfo"), fight.opponent.getName(), fight.opponent.getAttack(),
-				fight.opponent.getDefence(), fight.opponent.getHP(), fight.opponent.getWeapon(),
-				fight.opponent.getArmour(), fight.opponentStats.toString());
+				fight.opponent.getDefence(), fight.opponent.getHP(), fight.opponent.getWeapon().toString(),
+				fight.opponent.getArmour().toString(), fight.opponentStats.toString());
 
 		if (start == 1) { // version where hero starts
 			System.out.println(rs.getString("playerStartsBattle"));
@@ -185,13 +186,13 @@ public class Arena {
 			} else {
 				int ran = new Random().nextInt(100);
 				if (ran < 34) {
-					if (opponent.getWeapon().getName().equals("Bare hands")) {
+					if (opponent.getWeapon().getCode().equals("hands")) {
 						answer = "punch";
 					} else {
 						answer = "stab";
 					}
 				} else {
-					if (opponent.getWeapon().getName().equals("Bare hands")) {
+					if (opponent.getWeapon().getCode().equals("hands")) {
 						answer = "slap";
 					} else {
 						answer = "slash";
@@ -209,10 +210,10 @@ public class Arena {
 		 */
 		protected boolean heroTurn() {
 			String[] options;
-			if (hero.getWeapon().getName().equals("Bare hands")) {
-				options = new String[] {"punch", "slap"}; //TODO put into enum + fix localisation
+			if (hero.getWeapon().getCode().equals("hands")) {
+				options = Options.HANDS_FIGHT.getOptions();
 			} else {
-				options = new String[] {"slash", "stab", "throwWeapon"};
+				options = Options.WEAPON_FIGHT.getOptions();
 			}
 			if (options.length == 2) {
 				System.out.println(rs.getString("bareHandsOptions"));
@@ -232,7 +233,7 @@ public class Arena {
 		 * @return
 		 */
 		private boolean performAttack(String who, String attackType) {
-
+			
 			// if the weapon is "Bare hands"
 			if (attackType.equals("slap")) {
 				attackType = "slash";
@@ -261,15 +262,30 @@ public class Arena {
 				ran = new Random().nextDouble();
 				if (ran >= attackerStats.getSlashChance()) {
 					if (who.equals("hero")) {
-						System.out.println(rs.getString("playerSlashFail"));
+						if (attacker.getWeapon().getCode().equals("hands")) {
+							System.out.println(rs.getString("playerSlapFail"));
+						} else {
+							System.out.println(rs.getString("playerSlashFail"));
+						}
 					} else {
-						System.out.println(rs.getString("opponentSlashFail"));
+						if (attacker.getWeapon().getCode().equals("hands")) {
+							System.out.println(rs.getString("opponentSlapFail"));
+						} else {
+							System.out.println(rs.getString("opponentSlashFail"));
+						}
 					}
-				} else {
 					if (who.equals("hero")) {
-						System.out.println(rs.getString("playerSlashHit"));
+						if (attacker.getWeapon().getCode().equals("hands")) {
+							System.out.println(rs.getString("playerSlapHit"));
+						} else {
+							System.out.println(rs.getString("playerSlashHit"));
+						}
 					} else {
-						System.out.println(rs.getString("opponentSlashHit"));
+						if (attacker.getWeapon().getCode().equals("hands")) {
+							System.out.println(rs.getString("opponentSlapHit"));
+						} else {
+							System.out.println(rs.getString("opponentSlashHit"));
+						}
 					}
 					damage = attacker.getWeapon().getSlashHit();
 				}
@@ -279,21 +295,37 @@ public class Arena {
 				ran = new Random().nextDouble();
 				if (ran >= attackerStats.getStabChance()) {
 					if (who.equals("hero")) {
-						System.out.println(rs.getString("playerStabFail"));
+						if (attacker.getWeapon().getCode().equals("hands")) {
+							System.out.println(rs.getString("playerPunchFail"));
+						} else {
+							System.out.println(rs.getString("playerStabFail"));
+						}
 					} else {
-						System.out.printf(rs.getString("opponentStabFail"), attacker.getName());
+						if (attacker.getWeapon().getCode().equals("hands")) {
+							System.out.printf(rs.getString("opponentPunchFail"), attacker.getName());
+						} else {
+							System.out.printf(rs.getString("opponentStabFail"), attacker.getName());
+						}
 					}
 				} else {
 					if (who.equals("hero")) {
-						System.out.println(rs.getString("playerStabHit"));
+						if (attacker.getWeapon().getCode().equals("hands")) {
+							System.out.println(rs.getString("playerPunchHit"));
+						} else {
+							System.out.println(rs.getString("playerStabHit"));
+						}
 					} else {
-						System.out.println(rs.getString("opponentStabHit"));
+						if (attacker.getWeapon().getCode().equals("hands")) {
+							System.out.println(rs.getString("opponentPunchHit"));
+						} else {
+							System.out.println(rs.getString("opponentStabHit"));
+						}
 					}
 					damage = attacker.getWeapon().getStabHit();
 				}
 				break;
 
-			case "throw weapon": // attack == throw weapon (get rid of it)
+			case "throwWeapon": // attack == throw weapon (get rid of it)
 				ran = new Random().nextDouble();
 				if (ran >= attackerStats.getThrowWeaponChance()) {
 					if (who.equals("hero")) {
@@ -312,10 +344,10 @@ public class Arena {
 								rs.getString("opponentThrowHit"));
 					}
 					damage = attacker.getWeapon().getThrowHit();
-					if (!(attacker.getWeapon().getName().equals("A boomerang"))) { // boomerang always returns after
-																					// throwing
-						attacker.setWeapon(new Weapon("Bare hands")); // bare hands after you throw away your weapon
-					}
+				}
+				if (!(attacker.getWeapon().getCode().equals("boomerang"))) { // boomerang always returns after
+																				// throwing
+					attacker.setWeapon(new Weapon("hands")); // bare hands after you throw away your weapon
 				}
 				break;
 
@@ -455,9 +487,9 @@ public class Arena {
 		}
 	}
 
-	// testing main
-	/*
-	 * public static void main(String[] args) { Arena a = new Arena(new Hero("John",
-	 * "att"), new Scanner(System.in)); a.startFight(false); }
-	 */
+		// testing main
+		/*
+		 * public static void main(String[] args) { Arena a = new Arena(new Hero("John",
+		 * "att"), new Scanner(System.in)); a.startFight(false); }
+		 */
 }
