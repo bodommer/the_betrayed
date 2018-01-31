@@ -12,13 +12,13 @@ The controls are really simple. All you need to do is choose a correct answer fr
 #### Example:
 Your options are: new game, load, help, change language, exit.
 ##### Correct options:
-new game
-load
-change language
+  *new game
+  *load
+  *change language
 ##### Incorrect options:
-New gamer
-LOAD
-something else
+  *New game
+  *LOAD
+  *something else
 
 ## Requirements
 To run the game, all you need is Java 8 on your computer.
