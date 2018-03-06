@@ -1,14 +1,14 @@
-package cz.cuni.mff.java.places;
+package cz.cuni.mff.betrayed.places;
 
 import java.util.HashMap;
 import java.util.ResourceBundle;
 import java.util.Set;
 
-import cz.cuni.mff.java.character.Hero;
-import cz.cuni.mff.java.equipment.Armour;
-import cz.cuni.mff.java.main.Controller;
-import cz.cuni.mff.java.main.Input;
-import cz.cuni.mff.java.main.MyFileReader;
+import cz.cuni.mff.betrayed.character.Hero;
+import cz.cuni.mff.betrayed.equipment.Armour;
+import cz.cuni.mff.betrayed.main.Controller;
+import cz.cuni.mff.betrayed.main.Input;
+import cz.cuni.mff.betrayed.main.MyFileReader;
 
 /**
  * This is where a user can buy new Armour - also, this method contains only
@@ -35,9 +35,9 @@ public class Armoury {
 		System.out.println(rs.getString("armouryOffer"));
 		Set<String> armour = hero.getArmourSet();
 		String itemOption = rs.getString("armouryOption");
-		for (int i = 0; i < options.length; i++) {
+		for (String armourString : options) {
 			String[] data = mfr.readAndSeparateLine();
-			if (!(armour.contains(options[i]))) {
+			if (!(armour.contains(armourString))) {
 				System.out.printf(itemOption, rs.getString(data[0]+"C"),
 						rs.getString(data[0]+"N"), data[3], data[1], data[2], rs.getString(data[0]+"D"));
 				attr.put(data[0]+"C", Integer.parseInt(data[3]));
@@ -51,7 +51,7 @@ public class Armoury {
 		o[inputOptions.size()] = "exit";
 
 		while (true) {
-			String input = Input.get(o);
+			String input = Input.showOptionsAndGetInput(o);
 			if (!(input.equals("exit"))) {
 				if (hero.getCoins() >= attr.get(input)) {
 					hero.addArmour(input.substring(0, input.length()-1));

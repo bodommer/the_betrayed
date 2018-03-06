@@ -1,18 +1,17 @@
-package cz.cuni.mff.java.places;
+package cz.cuni.mff.betrayed.places;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.ResourceBundle;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import cz.cuni.mff.java.character.Hero;
-import cz.cuni.mff.java.equipment.Armour;
-import cz.cuni.mff.java.equipment.Weapon;
-import cz.cuni.mff.java.inputOptions.Options;
-import cz.cuni.mff.java.main.Controller;
-import cz.cuni.mff.java.main.Input;
-import cz.cuni.mff.java.main.MyFileReader;
+import cz.cuni.mff.betrayed.character.Hero;
+import cz.cuni.mff.betrayed.equipment.Armour;
+import cz.cuni.mff.betrayed.equipment.Weapon;
+import cz.cuni.mff.betrayed.inputOptions.Options;
+import cz.cuni.mff.betrayed.main.Controller;
+import cz.cuni.mff.betrayed.main.Input;
+import cz.cuni.mff.betrayed.main.MyFileReader;
 
 /**
  * This is where hero can see what weapons/armours he owns and choose which one
@@ -22,23 +21,18 @@ import cz.cuni.mff.java.main.MyFileReader;
  *
  */
 public class Home {
-	Set<String> heroWeapons;
-	Set<String> heroArmours;
-	HashMap<String, String> weapons;
-	HashMap<String, String> armours;
-	Hero hero;
-	ResourceBundle rs;
+	private Set<String> heroWeapons;
+	private Set<String> heroArmours;
+	private Hero hero;
+	private ResourceBundle rs;
 
 	/**
 	 * The constructor.
 	 * 
 	 * @param hero
-	 * @param scanner
 	 */
 public Home(Hero hero) {
 		this.hero = hero;
-		weapons = new HashMap<String, String>();
-		armours = new HashMap<String, String>();
 		heroWeapons = hero.getWeaponsSet();
 		heroArmours = hero.getArmourSet();
 		rs = Controller.getController().getResourceBundle();
@@ -53,7 +47,7 @@ public Home(Hero hero) {
 		while (true) {
 			System.out
 					.println(rs.getString("homePrompt1"));
-			String answer = Input.get(Options.HOME.getOptions());
+			String answer = Input.showOptionsAndGetInput(Options.HOME.getOptions());
 			switch (answer) {
 			case "seeWeapons":
 				seeWeapons();
@@ -78,6 +72,7 @@ public Home(Hero hero) {
 	/**
 	 * Shows list of owned weapons with statistics.
 	 */
+	@SuppressWarnings("resource")
 	private void seeWeapons() {
 		MyFileReader mfr = new MyFileReader("WeaponList");
 		int len = mfr.readAndSeparateLine().length;
@@ -94,6 +89,7 @@ public Home(Hero hero) {
 	/**
 	 * Shows list of owned armours with statistics.
 	 */
+	@SuppressWarnings("resource")
 	private void seeArmour() {
 		MyFileReader mfr = new MyFileReader("ArmourList");
 		int len = mfr.readAndSeparateLine().length;
@@ -118,7 +114,7 @@ public Home(Hero hero) {
 		String[] o = new String[heroWeapons.size() + 1];
 		new ArrayList<String>(heroWeapons).stream().map(s -> s+"C").collect(Collectors.toList()).toArray(o);
 		o[heroWeapons.size()] = "exit";
-		String answer = Input.get(o);
+		String answer = Input.showOptionsAndGetInput(o);
 		if (!(answer.equals("exit"))) {
 			hero.setWeapon(new Weapon(answer.substring(0, answer.length()-1)));
 			System.out.printf(rs.getString("homeWeaponChosen"), hero.getWeapon().toString());
@@ -137,7 +133,7 @@ public Home(Hero hero) {
 		String[] o = new String[heroArmours.size() + 1];
 		new ArrayList<String>(heroArmours).stream().map(s->s+"C").collect(Collectors.toList()).toArray(o);
 		o[heroArmours.size()] = "exit";
-		String answer = Input.get(o);
+		String answer = Input.showOptionsAndGetInput(o);
 		if (!(answer.equals("exit"))) {
 			hero.setArmour(new Armour(answer.substring(0, answer.length()-1)));
 			System.out.printf(rs.getString("homeArmourChosen"), hero.getArmour().toString());

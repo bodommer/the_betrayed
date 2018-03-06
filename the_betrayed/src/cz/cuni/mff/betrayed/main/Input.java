@@ -1,7 +1,4 @@
-/**
- * 
- */
-package cz.cuni.mff.java.main;
+package cz.cuni.mff.betrayed.main;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -9,27 +6,31 @@ import java.util.ResourceBundle;
 import java.util.Scanner;
 
 /**
- * This is just a wrapper class for static method get()
+ * This is just a wrapper class for static method get(). It helps the program to
+ * be used in different languages and 'translates' the localised commands into
+ * the neutral language of 'command codes'. It also prevents the user to go
+ * through with wrong commands.
  * 
  * @author Andrej
  *
  */
 public class Input {
 
+	private static Scanner scanner = new Scanner(System.in);
+
 	/**
 	 * This is a static method for getting an option from the user, which must be
 	 * one of the options in the Collection provided
 	 * 
-	 * @param col
-	 *            - a collection of allowed options
-	 * @param scanner
-	 *            - a scanner from where input shall be gotten
-	 * @return - returns the option from 'col' which was input by the user
+	 * @param keys
+	 *            - a String array of the possible options for the user. Use one of
+	 *            the game's enums.
+	 * @return - returns the index of the answer in the method parameter keys, which
+	 *         was input by the user
 	 */
-	public static String get(String[] keys) {
+	public static String showOptionsAndGetInput(String[] keys) {
 		ResourceBundle rs = Controller.getController().getResourceBundle();
 		List<String> values = new ArrayList<String>();
-		Scanner scanner = Controller.getController().getScanner();
 
 		for (String s : keys) {
 			if (s != null) {
@@ -47,5 +48,9 @@ public class Input {
 				System.out.println(rs.getString("inputInvalidCommand"));
 			}
 		}
+	}
+
+	public static Scanner getScanner() {
+		return scanner;
 	}
 }

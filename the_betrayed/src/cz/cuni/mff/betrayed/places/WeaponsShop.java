@@ -1,14 +1,14 @@
-package cz.cuni.mff.java.places;
+package cz.cuni.mff.betrayed.places;
 
 import java.util.HashMap;
 import java.util.ResourceBundle;
 import java.util.Set;
 
-import cz.cuni.mff.java.character.Hero;
-import cz.cuni.mff.java.equipment.Weapon;
-import cz.cuni.mff.java.main.Controller;
-import cz.cuni.mff.java.main.Input;
-import cz.cuni.mff.java.main.MyFileReader;
+import cz.cuni.mff.betrayed.character.Hero;
+import cz.cuni.mff.betrayed.equipment.Weapon;
+import cz.cuni.mff.betrayed.main.Controller;
+import cz.cuni.mff.betrayed.main.Input;
+import cz.cuni.mff.betrayed.main.MyFileReader;
 
 /**
  * This class has no constructor; here, the player can buy weapons for coins.
@@ -52,7 +52,7 @@ public final class WeaponsShop {
 		o[inputOptions.size()] = "exit";
 		// prompts user to choose an option
 		while (true) {
-			String input = Input.get(o);
+			String input = Input.showOptionsAndGetInput(o);
 			if (!(input.equals("exit"))) {
 				if (hero.getCoins() >= attr.get(input)) {
 					hero.addWeapon(input.substring(0, input.length()-1));

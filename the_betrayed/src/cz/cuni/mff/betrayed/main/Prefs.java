@@ -1,4 +1,4 @@
-package cz.cuni.mff.java.main;
+package cz.cuni.mff.betrayed.main;
 
 import java.util.prefs.Preferences;
 

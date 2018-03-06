@@ -1,4 +1,4 @@
-package cz.cuni.mff.java.main;
+package cz.cuni.mff.betrayed.main;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -8,16 +8,16 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.Locale;
 import java.util.ResourceBundle;
-import java.util.Scanner;
 import java.util.prefs.Preferences;
 
-import cz.cuni.mff.java.character.Hero;
-import cz.cuni.mff.java.inputOptions.Options;
-import cz.cuni.mff.java.places.Arena;
-import cz.cuni.mff.java.places.Armoury;
-import cz.cuni.mff.java.places.Home;
-import cz.cuni.mff.java.places.TrainingGround;
-import cz.cuni.mff.java.places.WeaponsShop;
+import cz.cuni.mff.betrayed.character.Hero;
+import cz.cuni.mff.betrayed.inputOptions.MainMenu;
+import cz.cuni.mff.betrayed.inputOptions.Options;
+import cz.cuni.mff.betrayed.places.Arena;
+import cz.cuni.mff.betrayed.places.Armoury;
+import cz.cuni.mff.betrayed.places.Home;
+import cz.cuni.mff.betrayed.places.TrainingGround;
+import cz.cuni.mff.betrayed.places.WeaponsShop;
 
 /**
  * This is the main class of the game which controls the main/game menus and
@@ -28,19 +28,26 @@ import cz.cuni.mff.java.places.WeaponsShop;
  */
 public class Controller {
 
+	private final int FIGHTS_PER_LEVEL = 6;
+	private final int LEVEL_COUNT = 3;
+	private final String SAVE_FILE_NAME = "hero.ser";
+	private final String SAVE_LOCATION = "." + File.separator + SAVE_FILE_NAME;
+	private final String LANGUAGE = "language";
+	private final String LANGUAGE_SLOVAK = "sk-SK";
+	private final String LANGUAGE_CZECH = "cs-CZ";
+	private final String LOCALISATION_ADDRESS = "localization.resource";
+	
 	private Hero hero;
-	private static Controller controller = new Controller();
-	private Scanner scanner;
+	private static final Controller controller = new Controller();
 	private Arena arena;
 	private int exit = 2;
-	ResourceBundle rs; 	
-	
+	private ResourceBundle rs;
+
 	/**
 	 * The Controller constructor. It can be gained only from public getController()
 	 * method.
 	 */
 	private Controller() {
-		scanner = new Scanner(System.in);
 		setLanguage();
 	}
 
@@ -67,26 +74,23 @@ public class Controller {
 	/**
 	 * The method controls the Game menu - gets the command from user and decides
 	 * what to do accordingly.
-	 * 
-	 * @param input
-	 *            - command, that user writes to choose an option from the game menu
 	 */
 	private void gameMenu() {
 		System.out.println(rs.getString("gameMenu"));
-		switch (Input.get(Options.GAME_MENU.getOptions())) {
+		switch (Input.showOptionsAndGetInput(Options.GAME_MENU.getOptions())) {
 		case "fight":
 			boolean boss = false;
-			if (hero.getFight() % 6 == 5) {
+			if (isBossFight()) {
 				boss = true;
 			}
 			if (arena.startFight(boss)) {
 				exit = 2;
 			} else {
 				hero.addKill();
-				if (hero.getFight() % 6 == 5) {
+				if (isBossFight()) {
 					System.out.println(rs.getString("nextFightBoss"));
 				}
-				if (hero.getFight() == 18) {
+				if (hero.getFight() == LEVEL_COUNT * FIGHTS_PER_LEVEL) {
 					System.out.println(rs.getString("endGameLine"));
 					System.out.printf(rs.getString("scoreLine"), hero.getScore());
 					exit = 0;
@@ -121,6 +125,10 @@ public class Controller {
 		}
 	}
 
+	private boolean isBossFight() {
+		return hero.getFight() % FIGHTS_PER_LEVEL == FIGHTS_PER_LEVEL - 1;
+	}
+	
 	/**
 	 * New game procedure - setting hero's name, attributes etc.
 	 */
@@ -128,9 +136,9 @@ public class Controller {
 		System.out.println(rs.getString("introText"));
 		System.out.println(rs.getString("controlsInfo"));
 		System.out.println(rs.getString("getName"));
-		String name = scanner.nextLine();
+		String name = Input.getScanner().nextLine();
 		System.out.println(rs.getString("getSkillset"));
-		hero = new Hero(name, Input.get(Options.SKILLSET.getOptions()));
+		hero = new Hero(name, Input.showOptionsAndGetInput(Options.SKILLSET.getOptions()));
 		System.out.println(rs.getString("heroCreated"));
 		arena = new Arena(hero);
 	}
@@ -140,7 +148,7 @@ public class Controller {
 	 */
 	private void mainMenu() {
 		System.out.println(rs.getString("mainMenu"));
-		switch (Input.get(Options.MAIN_MENU.getOptions())) {
+		switch (Input.showOptionsAndGetInput(MainMenu.values())) {
 		case "newGame": // start a new game and enter game menu
 			startProcedure();
 			exit = 1; // set menu to game menu
@@ -164,14 +172,12 @@ public class Controller {
 
 	private void saveGame() {
 		System.out.println(rs.getString("saveQuestion"));
-		if (Input.get(Options.YES_NO.getOptions()).equals("no")) {
+		if (Input.showOptionsAndGetInput(Options.YES_NO.getOptions()).equals("no")) {
 			System.out.println(rs.getString("gameNotSaved"));
 			return;
 		}
-		try {
-			ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(new File("./hero.ser")));
+		try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(new File(SAVE_LOCATION)));){		
 			oos.writeObject(hero);
-			oos.close();
 			System.out.println(rs.getString("gameSaved"));
 		} catch (IOException e) {
 			System.out.println(rs.getString("saveFailed"));
@@ -179,16 +185,13 @@ public class Controller {
 	}
 
 	private void loadSavedGame() {
-		try {
-			ObjectInputStream ois = new ObjectInputStream(new FileInputStream("hero.ser"));
+		try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(SAVE_FILE_NAME));) {
 			hero = (Hero) ois.readObject();
-			ois.close();
 			arena = new Arena(hero);
 			System.out.print(rs.getString("successfulLoad"));
 			exit = 1;
 		} catch (IOException e) {
-			System.out
-					.println(rs.getString("loadFailed"));
+			System.out.println(rs.getString("loadFailed"));
 		} catch (ClassNotFoundException e) {
 			System.out.println(rs.getString("loadFailedClassNotFound"));
 		}
@@ -202,11 +205,11 @@ public class Controller {
 	public static Controller getController() {
 		return controller;
 	}
-	
+
 	private void languageSelection() {
 		System.out.println(rs.getString("availableLanguages"));
 		System.out.println("en: English\nsk: Slovenčina");
-		String choice = Input.get(Options.LANGUAGES.getOptions());
+		String choice = Input.showOptionsAndGetInput(Options.LANGUAGES.getOptions());
 		if (!(choice.equals("exit"))) {
 			Preferences prefs = Prefs.getPrefs();
 			if (!(prefs.get("language", null).equals(choice))) {
@@ -215,17 +218,17 @@ public class Controller {
 			}
 		}
 	}
-	
+
 	private void setLanguage() {
 		Preferences prefs = Prefs.getPrefs();
-		if (prefs.get("language", null) == null) {
+		if (prefs.get(LANGUAGE, null) == null) {
 			Locale l = Locale.getDefault();
-			if (l.toString().equals("sk-SK") || l.toString().equals("cs-CZ")) {
+			if (l.toString().equals(LANGUAGE_SLOVAK) || l.toString().equals(LANGUAGE_CZECH)) {
 				prefs.put("language", "sk");
 			} else {
 				prefs.put("language", "en");
 			}
-		} 
+		}
 		String lang = prefs.get("language", null);
 		Locale loc;
 		if (lang.equals("sk")) {
@@ -235,18 +238,15 @@ public class Controller {
 		}
 		setResourceBundle(loc);
 	}
-	
+
 	private void setResourceBundle(Locale loc) {
-		rs = ResourceBundle.getBundle("localization.resource", loc);
+		rs = ResourceBundle.getBundle(LOCALISATION_ADDRESS, loc);
 	}
-	
+
 	public ResourceBundle getResourceBundle() {
 		return rs;
 	}
 
-	public Scanner getScanner() {
-		return scanner;
-	}
 	/**
 	 * Game launcher.
 	 * 

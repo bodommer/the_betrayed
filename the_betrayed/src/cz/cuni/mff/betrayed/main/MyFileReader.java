@@ -1,4 +1,4 @@
-package cz.cuni.mff.java.main;
+package cz.cuni.mff.betrayed.main;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -10,8 +10,8 @@ import java.io.InputStreamReader;
  * @author Andrej
  *
  */
-public class MyFileReader {
-	BufferedReader in;
+public class MyFileReader implements AutoCloseable {
+	private BufferedReader in;
 
 	/**
 	 * Constructor - opens the file and is ready for reading it.
@@ -22,12 +22,6 @@ public class MyFileReader {
 	 *            - what is the file name?
 	 */
 	public MyFileReader(String file) {
-		/*StringBuilder sb = new StringBuilder().append(new File(new File(".").getAbsolutePath()).getCanonicalPath());
-		sb.append(File.separator);
-		sb.append(file);
-
-		String url = sb.toString();
-		// System.out.println(url);*/
 		in = new BufferedReader(new InputStreamReader(getClass().getResourceAsStream("/files/" + file)));
 	}
 

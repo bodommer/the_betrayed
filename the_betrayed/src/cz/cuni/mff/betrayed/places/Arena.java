@@ -1,16 +1,16 @@
-package cz.cuni.mff.java.places;
+package cz.cuni.mff.betrayed.places;
 
 import java.util.Random;
 import java.util.ResourceBundle;
 import java.util.concurrent.TimeUnit;
 
-import cz.cuni.mff.java.character.Hero;
-import cz.cuni.mff.java.character.Opponent;
-import cz.cuni.mff.java.character.Person;
-import cz.cuni.mff.java.equipment.Weapon;
-import cz.cuni.mff.java.inputOptions.Options;
-import cz.cuni.mff.java.main.Controller;
-import cz.cuni.mff.java.main.Input;
+import cz.cuni.mff.betrayed.character.Hero;
+import cz.cuni.mff.betrayed.character.Opponent;
+import cz.cuni.mff.betrayed.character.Person;
+import cz.cuni.mff.betrayed.equipment.Weapon;
+import cz.cuni.mff.betrayed.inputOptions.Options;
+import cz.cuni.mff.betrayed.main.Controller;
+import cz.cuni.mff.betrayed.main.Input;
 
 /**
  * This is the most important place. Here, the fights take place and it is the
@@ -21,6 +21,7 @@ import cz.cuni.mff.java.main.Input;
  */
 public class Arena {
 
+	private Random random = new Random();
 	private Hero hero;
 	private ResourceBundle rs;
 
@@ -40,42 +41,34 @@ public class Arena {
 	 * fight.
 	 * 
 	 * @param boss
-	 * @return
+	 * @return returns true if hero dies, false if the opponent died.
 	 */
-	// returns true if hero died, false if opponent died
 	public boolean startFight(boolean boss) {
-		Fight fight = new Fight(false);
+		Fight fight = new Fight(boss);
 
 		if (fight.error) {
 			return false;
 		}
 
 		boolean end = false;
-		int start = new Random().nextInt(2); // 1 - hero starts, 0 - opponent starts
+		int start = random.nextInt(2); // 1 - hero starts, 0 - opponent starts
 		System.out.println(rs.getString("fightIntro"));
-		System.out.printf(rs.getString("heroFightInfo"), hero.getName(), hero.getAttack(), hero.getDefence(),
-				hero.getHP(), hero.getWeapon().toString(), hero.getArmour().toString(), fight.heroStats.toString());
-		System.out.printf(rs.getString("opponentFightInfo"), fight.opponent.getName(), fight.opponent.getAttack(),
-				fight.opponent.getDefence(), fight.opponent.getHP(), fight.opponent.getWeapon().toString(),
-				fight.opponent.getArmour().toString(), fight.opponentStats.toString());
+		printFightersInfo(fight);
 
 		if (start == 1) { // version where hero starts
 			System.out.println(rs.getString("playerStartsBattle"));
 			while (!(end)) {
 				end = fight.heroTurn(); // get hero's turn
 				if (end) { // if opponent is true
-					return false; // return false - here is NOT dead
+					return false; // return false - hero is NOT dead
 				} else {
 					System.out.printf(rs.getString("opponentHP"), fight.opponent.getLife());
-					System.out.println(rs.getString("opponentTurn"));
 					try {
-						TimeUnit.SECONDS.sleep(1);
-						end = fight.opponentTurn(); // get opponent's turn
-					} catch (InterruptedException ie) { // if an error occurs
-						System.out.println(rs.getString("playerWin"));
+						end = opponentTurn(fight); // get opponent's turn
+					} catch (InterruptedException ie) {
 						return false;
 					}
-					if (hero.getLife() > 0) { // check if hero is still alive
+					if (isAlive(hero)) { // check if hero is still alive
 						System.out.printf(rs.getString("playerHP"), hero.getLife());
 					}
 				}
@@ -85,12 +78,9 @@ public class Arena {
 		} else { // version where opponent starts first
 			System.out.println(rs.getString("opponentStartsBattle"));
 			while (!(end)) {
-				System.out.println(rs.getString("opponentTurn"));
 				try {
-					TimeUnit.SECONDS.sleep(1);
-					end = fight.opponentTurn();
+					end = opponentTurn(fight); // get opponent's turn
 				} catch (InterruptedException ie) {
-					System.out.println(rs.getString("playerWin"));
 					return false;
 				}
 				if (end) {
@@ -98,13 +88,38 @@ public class Arena {
 				} else {
 					System.out.printf(rs.getString("playerHP"), hero.getLife());
 					end = fight.heroTurn();
-					if (fight.opponent.getLife() > 0) {
+					if (isAlive(fight.opponent)) {
 						System.out.printf(rs.getString("opponentHP"), fight.opponent.getLife());
 					}
 				}
 			}
 			return false;
 		}
+	}
+
+	private void printFightersInfo(Fight fight) {
+
+		System.out.printf(rs.getString("heroFightInfo"), hero.getName(), hero.getAttack(), hero.getDefence(),
+				hero.getHP(), hero.getWeapon().toString(), hero.getArmour().toString(), fight.heroStats.toString());
+
+		System.out.printf(rs.getString("opponentFightInfo"), fight.opponent.getName(), fight.opponent.getAttack(),
+				fight.opponent.getDefence(), fight.opponent.getHP(), fight.opponent.getWeapon().toString(),
+				fight.opponent.getArmour().toString(), fight.opponentStats.toString());
+	}
+
+	private boolean opponentTurn(Fight fight) throws InterruptedException {
+		System.out.println(rs.getString("opponentTurn"));
+		try {
+			TimeUnit.SECONDS.sleep(1);
+			return fight.opponentTurn();
+		} catch (InterruptedException ie) {
+			System.out.println(rs.getString("playerWin"));
+			throw ie;
+		}
+	}
+
+	private boolean isAlive(Person p) {
+		return p.getLife() > 0;
 	}
 
 	/**
@@ -126,21 +141,9 @@ public class Arena {
 		 * @param boss
 		 *            - whether it is the fight against the boss, or not
 		 */
-		protected Fight(boolean boss) {
-			int line;
+		protected Fight(boolean isBoss) {
 
-			if (boss) {
-				line = 11;
-			} else {
-				while (true) { // check if the user has not fought yet against this opponent
-					line = new Random().nextInt(10) + 1;
-					if (!(hero.foughtBefore(line))) {
-						break;
-					}
-				}
-			}
-			opponent = getOpponent(hero.getLevel(), line); // create a new opponent
-			hero.addOpponent(line);
+			opponent = getOpponent(hero.getLevel(), isBoss); // create a new opponent
 			if (opponent.getHP() > 0) {
 				createChances(); // create percentual chances for attack success for all attack types.
 			} else { // if an error occurs when creating the opponent (HP = -1 then)
@@ -158,9 +161,20 @@ public class Arena {
 		 *            - which line in the file
 		 * @return
 		 */
-		private Opponent getOpponent(int level, int line) {
-			Opponent o = new Opponent(level, line);
-			return o;
+		private Opponent getOpponent(int level, boolean isBoss) {
+			int line;
+			if (isBoss) {
+				line = 11;
+			} else {
+				while (true) { // check if the user has not fought yet against this opponent
+					line = random.nextInt(10) + 1;
+					if (!(hero.foughtBefore(line))) {
+						break;
+					}
+				}
+			}
+			hero.addOpponent(line);
+			return new Opponent(level, line);
 		}
 
 		/**
@@ -184,7 +198,7 @@ public class Arena {
 			if (opponent.getHP() < hero.getWeapon().getSlashMax()) {
 				answer = "throw weapon";
 			} else {
-				int ran = new Random().nextInt(100);
+				int ran = random.nextInt(100);
 				if (ran < 34) {
 					if (opponent.getWeapon().getCode().equals("hands")) {
 						answer = "punch";
@@ -220,7 +234,7 @@ public class Arena {
 			} else {
 				System.out.println(rs.getString("weaponOptions"));
 			}
-			return performAttack("hero", Input.get(options));
+			return performAttack("hero", Input.showOptionsAndGetInput(options));
 		}
 
 		/**
@@ -233,7 +247,7 @@ public class Arena {
 		 * @return
 		 */
 		private boolean performAttack(String who, String attackType) {
-			
+
 			// if the weapon is "Bare hands"
 			if (attackType.equals("slap")) {
 				attackType = "slash";
@@ -241,7 +255,6 @@ public class Arena {
 				attackType = "stab";
 			}
 
-			double ran;
 			int damage = 0;
 			Person attacker;
 			Person defender;
@@ -259,102 +272,168 @@ public class Arena {
 
 			switch (attackType) {
 			case "slash": // attack == slash
-				ran = new Random().nextDouble();
-				if (ran >= attackerStats.getSlashChance()) {
-					if (who.equals("hero")) {
-						if (attacker.getWeapon().getCode().equals("hands")) {
-							System.out.println(rs.getString("playerSlapFail"));
-						} else {
-							System.out.println(rs.getString("playerSlashFail"));
-						}
-					} else {
-						if (attacker.getWeapon().getCode().equals("hands")) {
-							System.out.println(rs.getString("opponentSlapFail"));
-						} else {
-							System.out.println(rs.getString("opponentSlashFail"));
-						}
-					}
-					if (who.equals("hero")) {
-						if (attacker.getWeapon().getCode().equals("hands")) {
-							System.out.println(rs.getString("playerSlapHit"));
-						} else {
-							System.out.println(rs.getString("playerSlashHit"));
-						}
-					} else {
-						if (attacker.getWeapon().getCode().equals("hands")) {
-							System.out.println(rs.getString("opponentSlapHit"));
-						} else {
-							System.out.println(rs.getString("opponentSlashHit"));
-						}
-					}
-					damage = attacker.getWeapon().getSlashHit();
-				}
+				damage = slashAttack(who, attacker, attackerStats);
+				/*
+				 * ran = random.nextDouble(); if (ran >= attackerStats.getSlashChance()) { if
+				 * (who.equals("hero")) { if (attacker.getWeapon().getCode().equals("hands")) {
+				 * System.out.println(rs.getString("playerSlapFail")); } else {
+				 * System.out.println(rs.getString("playerSlashFail")); } } else { if
+				 * (attacker.getWeapon().getCode().equals("hands")) {
+				 * System.out.println(rs.getString("opponentSlapFail")); } else {
+				 * System.out.println(rs.getString("opponentSlashFail")); } } } else { if
+				 * (who.equals("hero")) { if (attacker.getWeapon().getCode().equals("hands")) {
+				 * System.out.println(rs.getString("playerSlapHit")); } else {
+				 * System.out.println(rs.getString("playerSlashHit")); } } else { if
+				 * (attacker.getWeapon().getCode().equals("hands")) {
+				 * System.out.println(rs.getString("opponentSlapHit")); } else {
+				 * System.out.println(rs.getString("opponentSlashHit")); } } damage =
+				 * attacker.getWeapon().getSlashHit(); }
+				 */
 				break;
 
 			case "stab": // attack == stab
-				ran = new Random().nextDouble();
-				if (ran >= attackerStats.getStabChance()) {
-					if (who.equals("hero")) {
-						if (attacker.getWeapon().getCode().equals("hands")) {
-							System.out.println(rs.getString("playerPunchFail"));
-						} else {
-							System.out.println(rs.getString("playerStabFail"));
-						}
-					} else {
-						if (attacker.getWeapon().getCode().equals("hands")) {
-							System.out.printf(rs.getString("opponentPunchFail"), attacker.getName());
-						} else {
-							System.out.printf(rs.getString("opponentStabFail"), attacker.getName());
-						}
-					}
-				} else {
-					if (who.equals("hero")) {
-						if (attacker.getWeapon().getCode().equals("hands")) {
-							System.out.println(rs.getString("playerPunchHit"));
-						} else {
-							System.out.println(rs.getString("playerStabHit"));
-						}
-					} else {
-						if (attacker.getWeapon().getCode().equals("hands")) {
-							System.out.println(rs.getString("opponentPunchHit"));
-						} else {
-							System.out.println(rs.getString("opponentStabHit"));
-						}
-					}
-					damage = attacker.getWeapon().getStabHit();
-				}
+				damage = stabAttack(who, attacker, attackerStats);
+				/*
+				 * ran = random.nextDouble(); if (ran >= attackerStats.getStabChance()) { if
+				 * (who.equals("hero")) { if (attacker.getWeapon().getCode().equals("hands")) {
+				 * System.out.println(rs.getString("playerPunchFail")); } else {
+				 * System.out.println(rs.getString("playerStabFail")); } } else { if
+				 * (attacker.getWeapon().getCode().equals("hands")) {
+				 * System.out.printf(rs.getString("opponentPunchFail"), attacker.getName()); }
+				 * else { System.out.printf(rs.getString("opponentStabFail"),
+				 * attacker.getName()); } } } else { if (who.equals("hero")) { if
+				 * (attacker.getWeapon().getCode().equals("hands")) {
+				 * System.out.println(rs.getString("playerPunchHit")); } else {
+				 * System.out.println(rs.getString("playerStabHit")); } } else { if
+				 * (attacker.getWeapon().getCode().equals("hands")) {
+				 * System.out.println(rs.getString("opponentPunchHit")); } else {
+				 * System.out.println(rs.getString("opponentStabHit")); } } damage =
+				 * attacker.getWeapon().getStabHit(); }
+				 */
 				break;
 
 			case "throwWeapon": // attack == throw weapon (get rid of it)
-				ran = new Random().nextDouble();
-				if (ran >= attackerStats.getThrowWeaponChance()) {
-					if (who.equals("hero")) {
-						System.out.println(
-								rs.getString("playerThrowFail"));
-					} else {
-						System.out.println(
-								rs.getString("opponentThrowFail"));
-					}
-				} else {
-					if (who.equals("hero")) {
-						System.out.println(
-								rs.getString("playerThrowHit"));
-					} else {
-						System.out.println(
-								rs.getString("opponentThrowHit"));
-					}
-					damage = attacker.getWeapon().getThrowHit();
-				}
-				if (!(attacker.getWeapon().getCode().equals("boomerang"))) { // boomerang always returns after
-																				// throwing
-					attacker.setWeapon(new Weapon("hands")); // bare hands after you throw away your weapon
-				}
+				damage = throwAttack(who, attacker, attackerStats);
+
+				/*
+				 * ran = random.nextDouble(); if (ran >= attackerStats.getThrowWeaponChance()) {
+				 * if (who.equals("hero")) { System.out.println(
+				 * rs.getString("playerThrowFail")); } else { System.out.println(
+				 * rs.getString("opponentThrowFail")); } } else { if (who.equals("hero")) {
+				 * System.out.println( rs.getString("playerThrowHit")); } else {
+				 * System.out.println( rs.getString("opponentThrowHit")); } damage =
+				 * attacker.getWeapon().getThrowHit(); } if
+				 * (!(attacker.getWeapon().getCode().equals("boomerang"))) { // boomerang always
+				 * returns after // throwing attacker.setWeapon(new Weapon("hands")); // bare
+				 * hands after you throw away your weapon }
+				 */
 				break;
 
 			default:
 				break;
 			}
 			return defender.damage(damage);
+		}
+
+		private int slashAttack(String who, Person attacker, FightStats attackerStats) {
+			int damage = 0;
+			double ran = random.nextDouble();
+
+			if (ran >= attackerStats.getSlashChance()) {
+				if (who.equals("hero")) {
+					if (attacker.getWeapon().getCode().equals("hands")) {
+						System.out.println(rs.getString("playerSlapFail"));
+					} else {
+						System.out.println(rs.getString("playerSlashFail"));
+					}
+				} else {
+					if (attacker.getWeapon().getCode().equals("hands")) {
+						System.out.println(rs.getString("opponentSlapFail"));
+					} else {
+						System.out.println(rs.getString("opponentSlashFail"));
+					}
+				}
+			} else {
+				if (who.equals("hero")) {
+					if (attacker.getWeapon().getCode().equals("hands")) {
+						System.out.println(rs.getString("playerSlapHit"));
+					} else {
+						System.out.println(rs.getString("playerSlashHit"));
+					}
+				} else {
+					if (attacker.getWeapon().getCode().equals("hands")) {
+						System.out.println(rs.getString("opponentSlapHit"));
+					} else {
+						System.out.println(rs.getString("opponentSlashHit"));
+					}
+				}
+				damage = attacker.getWeapon().getSlashHit();
+			}
+			return damage;
+		}
+
+		private int stabAttack(String who, Person attacker, FightStats attackerStats) {
+
+			int damage = 0;
+			double ran = random.nextDouble();
+
+			if (ran >= attackerStats.getStabChance()) {
+				if (who.equals("hero")) {
+					if (attacker.getWeapon().getCode().equals("hands")) {
+						System.out.println(rs.getString("playerPunchFail"));
+					} else {
+						System.out.println(rs.getString("playerStabFail"));
+					}
+				} else {
+					if (attacker.getWeapon().getCode().equals("hands")) {
+						System.out.printf(rs.getString("opponentPunchFail"), attacker.getName());
+					} else {
+						System.out.printf(rs.getString("opponentStabFail"), attacker.getName());
+					}
+				}
+			} else {
+				if (who.equals("hero")) {
+					if (attacker.getWeapon().getCode().equals("hands")) {
+						System.out.println(rs.getString("playerPunchHit"));
+					} else {
+						System.out.println(rs.getString("playerStabHit"));
+					}
+				} else {
+					if (attacker.getWeapon().getCode().equals("hands")) {
+						System.out.println(rs.getString("opponentPunchHit"));
+					} else {
+						System.out.println(rs.getString("opponentStabHit"));
+					}
+				}
+				damage = attacker.getWeapon().getStabHit();
+			}
+			return damage;
+		}
+
+		private int throwAttack(String who, Person attacker, FightStats attackerStats) {
+
+			int damage = 0;
+			double ran = random.nextDouble();
+
+			if (ran >= attackerStats.getThrowWeaponChance()) {
+				if (who.equals("hero")) {
+					System.out.println(rs.getString("playerThrowFail"));
+				} else {
+					System.out.println(rs.getString("opponentThrowFail"));
+				}
+			} else {
+				if (who.equals("hero")) {
+					System.out.println(rs.getString("playerThrowHit"));
+				} else {
+					System.out.println(rs.getString("opponentThrowHit"));
+				}
+				damage = attacker.getWeapon().getThrowHit();
+			}
+			if (!(attacker.getWeapon().getCode().equals("boomerang"))) { // boomerang always returns after
+																			// throwing
+				attacker.setWeapon(new Weapon("hands")); // bare hands after you throw away your weapon
+			}
+			return damage;
 		}
 
 		/**
@@ -365,6 +444,31 @@ public class Arena {
 		 */
 		private class FightStats {
 
+			private final double ATTACK_SLASHATT_MODIFIER = 0.4;
+			private final double REFLEXES_SLASHATT_MODIFIER = 0.1;
+			private final double WEAPON_SLASHATT_MODFIER = 0.5;
+			private final double ATTACK_STABATT_MODIFIER = 0.45;
+			private final double WEAPON_STABATT_MODIFIER = 0.55;
+			private final double ATTACK_THROWATT_MODIFIER = 0.3;
+			private final double STRENGTH_THROWATT_MODIFIER = 0.2;
+			private final double WEAPON_THROWATT_MODIFIER = 0.5;
+			private final double DEFENCE_SLAHSDEF_MODIFIER = 0.6;
+			private final double REFLEXES_SLASHDEF_MODIFIER = 0.2;
+			private final double DEFENCE_STABDEF_MODIFIER = 0.4;
+			private final double REFLEXES_STABDEF_MODIFIER = 0.5;
+			private final double REFLEXES_THROWDEF_MODIFIER = 0.5;
+			private final double DEFENCE_THROWDEF_MODIFIER = 0.3;
+			private final double SLASH_CHANCE_MODIFIER = 1.35;
+			private final double STAB_CHANCE_MODIFIER = 0.97;
+			private final double THROW_CHANCE_MODIFIER = 0.38;
+			private final double SLASH_HIGH_VALUE = 0.99;
+			private final double SLASH_LOW_VALUE = 0.4;
+			private final double STAB_HIGH_VALUE = 0.69;
+			private final double STAB_LOW_VALUE = 0.2;
+			private final double THROW_HIGH_VALUE = 0.29;
+			private final double THROW_LOW_VALUE = 0.08;
+			private final int PERCENTAGE = 100;
+			
 			private double slashAtt;
 			private double stabAtt;
 			private double throwWeaponAtt;
@@ -383,16 +487,19 @@ public class Arena {
 			 * @param p
 			 */
 			protected FightStats(Person p) {
-				slashAtt = p.getAttack() * 0.4 + p.getReflexes() * 0.1
-						+ 0.5 * (p.getWeapon().getPowerIndex(p.getStrength()));
-				stabAtt = 0.45 * p.getAttack() + 0.55 * (p.getWeapon().getPowerIndex(p.getStrength()));
-				throwWeaponAtt = 0.3 * p.getAttack() + 0.2 * p.getStrength()
-						+ 0.5 * (p.getWeapon().getPowerIndex(p.getStrength()));
+				slashAtt = p.getAttack() * ATTACK_SLASHATT_MODIFIER + p.getReflexes() * REFLEXES_SLASHATT_MODIFIER
+						+ WEAPON_SLASHATT_MODFIER * (p.getWeapon().getPowerIndex(p.getStrength()));
+				
+				stabAtt = ATTACK_STABATT_MODIFIER * p.getAttack() + WEAPON_STABATT_MODIFIER * (p.getWeapon().getPowerIndex(p.getStrength()));
+				
+				throwWeaponAtt = ATTACK_THROWATT_MODIFIER * p.getAttack() + STRENGTH_THROWATT_MODIFIER * p.getStrength()
+						+ WEAPON_THROWATT_MODIFIER * (p.getWeapon().getPowerIndex(p.getStrength()));
 
-				slashDef = p.getDefence() * 0.6 + p.getReflexes() * 0.2 + p.getArmour().getDefIndex(p.getStrength());
-				stabDef = p.getDefence() * 0.4 + p.getReflexes() * 0.5 + p.getArmour().getDefIndex(p.getStrength());
-				throwWeaponDef = p.getReflexes() * 0.5 + p.getDefence() * 0.3
-						+ p.getArmour().getDefIndex(p.getStrength());
+				slashDef = p.getDefence() * DEFENCE_SLAHSDEF_MODIFIER + p.getReflexes() * REFLEXES_SLASHDEF_MODIFIER + p.getArmour().getDefIndex(p.getStrength());
+				
+				stabDef = p.getDefence() * DEFENCE_STABDEF_MODIFIER + p.getReflexes() * REFLEXES_STABDEF_MODIFIER + p.getArmour().getDefIndex(p.getStrength());
+				
+				throwWeaponDef = p.getReflexes() * REFLEXES_THROWDEF_MODIFIER + p.getDefence() * DEFENCE_THROWDEF_MODIFIER + p.getArmour().getDefIndex(p.getStrength());
 			}
 
 			/**
@@ -401,9 +508,9 @@ public class Arena {
 			 * @param otherGuy
 			 */
 			protected void percentages(FightStats otherGuy) {
-				setSlashChance(1.35 * getSlashAtt() / otherGuy.getSlashDef());
-				setStabChance(0.97 * getStabAtt() / otherGuy.getStabDef());
-				setThrowWeaponChance(0.38 * getThrowWeaponAtt() / otherGuy.getThrowWeaponDef());
+				setSlashChance(SLASH_CHANCE_MODIFIER * getSlashAtt() / otherGuy.getSlashDef());
+				setStabChance(STAB_CHANCE_MODIFIER * getStabAtt() / otherGuy.getStabDef());
+				setThrowWeaponChance(THROW_CHANCE_MODIFIER * getThrowWeaponAtt() / otherGuy.getThrowWeaponDef());
 			}
 
 			public double getSlashAtt() {
@@ -431,12 +538,12 @@ public class Arena {
 			}
 
 			private void setSlashChance(double d) {
-				if (d > 0.99) {
-					slashChance = 0.99;
-				} else if (d < 0.4) {
-					slashChance = 0.4;
+				if (d > SLASH_HIGH_VALUE) {
+					slashChance = SLASH_HIGH_VALUE;
+				} else if (d < SLASH_LOW_VALUE) {
+					slashChance = SLASH_LOW_VALUE;
 				} else {
-					slashChance = ((double) Math.round(d * 100)) / 100;
+					slashChance = ((double) Math.round(d * PERCENTAGE)) / PERCENTAGE;
 				}
 			}
 
@@ -445,12 +552,12 @@ public class Arena {
 			}
 
 			private void setStabChance(double d) {
-				if (d > 0.69) {
-					stabChance = 0.69;
-				} else if (d < 0.2) {
-					stabChance = 0.2;
+				if (d > STAB_HIGH_VALUE) {
+					stabChance = STAB_HIGH_VALUE;
+				} else if (d < STAB_LOW_VALUE) {
+					stabChance = STAB_LOW_VALUE;
 				} else {
-					stabChance = ((double) Math.round(d * 100)) / 100;
+					stabChance = ((double) Math.round(d * PERCENTAGE)) / PERCENTAGE;
 				}
 			}
 
@@ -459,12 +566,12 @@ public class Arena {
 			}
 
 			private void setThrowWeaponChance(double d) {
-				if (d > 0.29) {
-					throwWeaponChance = 0.29;
-				} else if (d < 0.08) {
-					throwWeaponChance = 0.08;
+				if (d > THROW_HIGH_VALUE) {
+					throwWeaponChance = THROW_HIGH_VALUE;
+				} else if (d < THROW_LOW_VALUE) {
+					throwWeaponChance = THROW_LOW_VALUE;
 				} else {
-					throwWeaponChance = ((double) Math.round(d * 100)) / 100;
+					throwWeaponChance = ((double) Math.round(d * PERCENTAGE)) / PERCENTAGE;
 				}
 			}
 
@@ -476,20 +583,22 @@ public class Arena {
 			public String toString() {
 				StringBuilder sb = new StringBuilder();
 				sb.append(rs.getString("stabChance"));
-				sb.append((int) stabChance * 100);
+				sb.append(Math.round(stabChance * PERCENTAGE));
 				sb.append(rs.getString("slashChance"));
-				sb.append((int) slashChance * 100);
+				sb.append(Math.round(slashChance * PERCENTAGE));
 				sb.append(rs.getString("throwChance"));
-				sb.append((int) throwWeaponChance * 100);
+				sb.append(Math.round(throwWeaponChance * PERCENTAGE));
 				sb.append("%");
-				return sb.toString();
+				return rs.getString("stabChance") + Math.round(stabChance * PERCENTAGE) + 
+						rs.getString("slashChance") + Math.round(slashChance * PERCENTAGE) + 
+						rs.getString("throwChance") + Math.round(throwWeaponChance * PERCENTAGE) + "%";
 			}
 		}
 	}
 
-		// testing main
-		/*
-		 * public static void main(String[] args) { Arena a = new Arena(new Hero("John",
-		 * "att"), new Scanner(System.in)); a.startFight(false); }
-		 */
+	// testing main
+	/*
+	 * public static void main(String[] args) { Arena a = new Arena(new Hero("John",
+	 * "att"), new Scanner(System.in)); a.startFight(false); }
+	 */
 }

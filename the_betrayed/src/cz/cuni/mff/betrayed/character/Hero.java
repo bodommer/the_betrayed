@@ -1,12 +1,12 @@
-package cz.cuni.mff.java.character;
+package cz.cuni.mff.betrayed.character;
 
 import java.util.HashSet;
 import java.util.Random;
 import java.util.Set;
 
-import cz.cuni.mff.java.equipment.Armour;
-import cz.cuni.mff.java.equipment.Weapon;
-import cz.cuni.mff.java.main.Controller;
+import cz.cuni.mff.betrayed.equipment.Armour;
+import cz.cuni.mff.betrayed.equipment.Weapon;
+import cz.cuni.mff.betrayed.main.Controller;
 
 /**
  * Hero is the main concept of the game. It stores all the progress of the game, game data etc.
@@ -14,7 +14,16 @@ import cz.cuni.mff.java.main.Controller;
  *
  */
 public class Hero extends Person {
-
+	
+	private final int BONUS_MODIFIER = 100;
+	private final int RANDOM_INT = 10;
+	private final int XP_MODIFIER = 2;
+	private final int COIN_BONUS = 50;
+	private final int SKILL_COST_MODIFIER = 50;
+	private final int HP_COST_MODIFIER = 5;
+	private final int HP_INCREASE_AMOUNT = 5;
+	private final int FIGHTS_PER_LEVEL = 6;
+	
 	private static final long serialVersionUID = 2;
 	private int score = 0;
 	private int coins = 0;
@@ -25,6 +34,7 @@ public class Hero extends Person {
 	private Set<String> armours = new HashSet<String>();
 	private int fights = 0;
 	private Set<Integer> opponents = new HashSet<Integer>();
+	private Random rand = new Random();
 
 	/**
 	 * The constructor.
@@ -47,9 +57,9 @@ public class Hero extends Person {
 	 * Called after a won fight in the Arena. Adds coins and XP to user as well as to kills number.
 	 */
 	public void addKill() {
-		kills += 1;
-		int x = 2 * 100 + getLife() - getHP();
-		int c = level * (new Random().nextInt(100) + 50) + new Random().nextInt(10);
+		kills++;
+		int x = XP_MODIFIER * BONUS_MODIFIER + getLife() - getHP();
+		int c = level * (rand.nextInt(BONUS_MODIFIER) + COIN_BONUS) + rand.nextInt(RANDOM_INT);
 		xp += x;
 		coins += c;
 		addScore(x);
@@ -103,7 +113,7 @@ public class Hero extends Person {
 
 	public void addFight() {
 		fights += 1;
-		if (fights % 6 == 0) {
+		if (fights % FIGHTS_PER_LEVEL == 0) {
 			level += 1;
 			opponents = new HashSet<Integer>();
 		}
@@ -130,41 +140,41 @@ public class Hero extends Person {
 	public boolean spendXP(String skill) {
 		switch (skill) {
 		case "attack":
-			if (attack * 50 <= xp) {
-				xp -= attack * 50;
-				attack += 1;
+			if (attack * SKILL_COST_MODIFIER <= xp) {
+				xp -= attack * SKILL_COST_MODIFIER;
+				attack++;
 			} else {
 				return false;
 			}
 			break;
 		case "defence":
-			if (defence * 50 <= xp) {
-				xp -= defence * 50;
-				defence += 1;
+			if (defence * SKILL_COST_MODIFIER <= xp) {
+				xp -= defence * SKILL_COST_MODIFIER;
+				defence++;
 			} else {
 				return false;
 			}
 			break;
 		case "reflexes":
-			if (reflexes * 50 <= xp) {
-				xp -= reflexes * 50;
-				reflexes += 1;
+			if (reflexes * SKILL_COST_MODIFIER <= xp) {
+				xp -= reflexes * SKILL_COST_MODIFIER;
+				reflexes++;
 			} else {
 				return false;
 			}
 			break;
 		case "strength":
-			if (strength * 50 <= xp) {
-				xp -= strength * 50;
-				strength += 1;
+			if (strength * SKILL_COST_MODIFIER <= xp) {
+				xp -= strength * SKILL_COST_MODIFIER;
+				strength++;
 			} else {
 				return false;
 			}
 			break;
 		case "hp":
-			if (hp * 5 <= xp) {
-				xp -= hp * 5;
-				hp += 5;
+			if (hp * HP_COST_MODIFIER <= xp) {
+				xp -= hp * HP_COST_MODIFIER;
+				hp += HP_INCREASE_AMOUNT;
 			} else {
 				return false;
 			}
