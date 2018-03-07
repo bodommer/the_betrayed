@@ -7,9 +7,9 @@
     <property name="classes.dir" value="${build.dir}/classes"/>
     <property name="jar.dir"     value="${build.dir}/jar"/>
 
-    <property name="main-class"  value="cz.cuni.mff.betrayed.main.Controller"/>
+	<property name="main-class"  value="cz.cuni.mff.betrayed.main.Controller"/>
 	
-    <target name="clean">
+	<target name="clean">
         <delete dir="${build.dir}/"/>
     </target>
 	
