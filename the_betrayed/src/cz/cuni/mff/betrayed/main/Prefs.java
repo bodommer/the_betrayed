@@ -2,10 +2,9 @@ package cz.cuni.mff.betrayed.main;
 
 import java.util.prefs.Preferences;
 
-public class Prefs {
+public interface Prefs {
 	
-	public static Preferences getPrefs() {
+	public default Preferences getPrefs() {
 		return Preferences.userNodeForPackage(Prefs.class);
 	}
-	
 }

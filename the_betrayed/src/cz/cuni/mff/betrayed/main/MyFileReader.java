@@ -57,7 +57,4 @@ public class MyFileReader implements AutoCloseable {
 		} catch (IOException io) {
 		}
 	}
-	public static void main(String[] args) {
-		new MyFileReader("ArmourList");
-	}
 }

@@ -1,21 +1,36 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<project default="create_run_jar" name="Create Runnable Jar for Project the_betrayed with Jar-in-Jar Loader">
-    <!--this file was created by Eclipse Runnable JAR file Export Wizard-->
-    <!--ANT 1.7 is required-->
-    <!--define folder properties-->
-    <property name="dir.buildfile" value="."/>
-    <property name="dir.workspace" value="C:/Users/Andrej/Desktop/Sync/eclipse oxygen workspace"/>
-    <property name="dir.jarfile" value="C:/Users/Andrej/Desktop"/>
-    <target name="create_run_jar">
-        <jar destfile="${dir.jarfile}/program_runnable.jar">
+<project name="the_betrayed_runnable" basedir="." default="main">
+    
+    <property name="src.dir"     value="src"/>
+
+    <property name="build.dir"   value="target"/>
+    <property name="classes.dir" value="${build.dir}/classes"/>
+    <property name="jar.dir"     value="${build.dir}/jar"/>
+
+    <property name="main-class"  value="cz.cuni.mff.betrayed.main.Controller"/>
+	
+    <target name="clean">
+        <delete dir="${build.dir}/"/>
+    </target>
+	
+    <target name="compile">
+        <mkdir dir="${classes.dir}"/>
+        <javac srcdir="${src.dir}" includeantruntime="true" destdir="${classes.dir}"/>
+    </target>
+
+    <target name="jar">
+        <mkdir dir="${jar.dir}"/>
+        <jar destfile="${jar.dir}/${ant.project.name}.jar" basedir="${classes.dir}">
             <manifest>
-                <attribute name="Main-Class" value="org.eclipse.jdt.internal.jarinjarloader.JarRsrcLoader"/>
-                <attribute name="Rsrc-Main-Class" value="cz.cuni.mff.betrayed.main.Controller"/>
-                <attribute name="Class-Path" value="."/>
-                <attribute name="Rsrc-Class-Path" value="./"/>
+                <attribute name="Main-Class" value="${main-class}"/>
             </manifest>
-            <zipfileset src="jar-in-jar-loader.zip"/>
-            <fileset dir="${dir.buildfile}/target/classes"/>
         </jar>
     </target>
+	
+
+	
+    <target name="clean-build" depends="clean,jar"/>
+
+    <target name="main" depends="clean, compile, jar"/>
+	
 </project>

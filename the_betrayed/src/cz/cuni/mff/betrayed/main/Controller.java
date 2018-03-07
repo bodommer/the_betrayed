@@ -25,7 +25,7 @@ import cz.cuni.mff.betrayed.places.WeaponsShop;
  * @author Andrej
  *
  */
-public class Controller {
+public class Controller implements Prefs{
 
 	private final int FIGHTS_PER_LEVEL = 6;
 	private final int LEVEL_COUNT = 3;
@@ -207,19 +207,19 @@ public class Controller {
 
 	private void languageSelection() {
 		System.out.println(rs.getString("availableLanguages"));
-		System.out.println("en: English\nsk: Slovenčina");
+		System.out.println("en: English\nsk: Slovenina");
 		String choice = Input.showOptionsAndGetInput(Options.LANGUAGES);
 		if (!(choice.equals("exit"))) {
-			Preferences prefs = Prefs.getPrefs();
+			Preferences prefs = getPrefs(); // Interface -> Controller implements Prefs with default getPrefs() method
 			if (!(prefs.get("language", null).equals(choice))) {
 				prefs.put("language", choice);
 				System.out.println(rs.getString("languageChanged"));
 			}
 		}
 	}
-
+ 
 	private void setLanguage() {
-		Preferences prefs = Prefs.getPrefs();
+		Preferences prefs = getPrefs(); // Interface -> Controller implements Prefs with default getPrefs() method
 		if (prefs.get(LANGUAGE, null) == null) {
 			Locale l = Locale.getDefault();
 			if (l.toString().equals(LANGUAGE_SLOVAK) || l.toString().equals(LANGUAGE_CZECH)) {

@@ -8,7 +8,7 @@ import cz.cuni.mff.betrayed.character.Hero;
 import cz.cuni.mff.betrayed.character.Opponent;
 import cz.cuni.mff.betrayed.character.Person;
 import cz.cuni.mff.betrayed.equipment.Weapon;
-import cz.cuni.mff.betrayed.inputOptions.Options;
+import cz.cuni.mff.betrayed.inputOptions.Options; 
 import cz.cuni.mff.betrayed.main.Controller;
 import cz.cuni.mff.betrayed.main.Input;
 
