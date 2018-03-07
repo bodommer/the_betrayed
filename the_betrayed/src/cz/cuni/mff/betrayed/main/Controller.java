@@ -25,7 +25,7 @@ import cz.cuni.mff.betrayed.places.WeaponsShop;
  * @author Andrej
  *
  */
-public class Controller implements Prefs{
+public class Controller{
 
 	private final int FIGHTS_PER_LEVEL = 6;
 	private final int LEVEL_COUNT = 3;
@@ -210,7 +210,7 @@ public class Controller implements Prefs{
 		System.out.println("en: English\nsk: Slovenina");
 		String choice = Input.showOptionsAndGetInput(Options.LANGUAGES);
 		if (!(choice.equals("exit"))) {
-			Preferences prefs = getPrefs(); // Interface -> Controller implements Prefs with default getPrefs() method
+			Preferences prefs = Prefs.getPrefs(); // Interface -> Controller implements Prefs with default getPrefs() method
 			if (!(prefs.get("language", null).equals(choice))) {
 				prefs.put("language", choice);
 				System.out.println(rs.getString("languageChanged"));
@@ -219,7 +219,7 @@ public class Controller implements Prefs{
 	}
  
 	private void setLanguage() {
-		Preferences prefs = getPrefs(); // Interface -> Controller implements Prefs with default getPrefs() method
+		Preferences prefs = Prefs.getPrefs(); // Interface -> Controller implements Prefs with default getPrefs() method
 		if (prefs.get(LANGUAGE, null) == null) {
 			Locale l = Locale.getDefault();
 			if (l.toString().equals(LANGUAGE_SLOVAK) || l.toString().equals(LANGUAGE_CZECH)) {
@@ -239,9 +239,9 @@ public class Controller implements Prefs{
 	}
 
 	private void setResourceBundle(Locale loc) {
-		rs = ResourceBundle.getBundle(LOCALISATION_ADDRESS, loc);
+		rs = ResourceBundle.getBundle("localization.resource", loc);
 	}
-
+ 
 	public ResourceBundle getResourceBundle() {
 		return rs;
 	}

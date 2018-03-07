@@ -7,7 +7,7 @@ package cz.cuni.mff.betrayed.inputOptions;
  * @author Andrej
  *
  */
-public interface Options {
+public class Options {
 	
 	public static String[] MAIN_MENU = {"newGame", "load", "help", "changeLanguage", "exit"};
 	public static String[] GAME_MENU = {"fight", "visitArmoury", "visitWeaponsShop", "levelUp", "visitHome", "save", "menu", "help", "exit"};
