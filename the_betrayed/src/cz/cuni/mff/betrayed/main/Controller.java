@@ -11,7 +11,6 @@ import java.util.ResourceBundle;
 import java.util.prefs.Preferences;
 
 import cz.cuni.mff.betrayed.character.Hero;
-import cz.cuni.mff.betrayed.inputOptions.MainMenu;
 import cz.cuni.mff.betrayed.inputOptions.Options;
 import cz.cuni.mff.betrayed.places.Arena;
 import cz.cuni.mff.betrayed.places.Armoury;
@@ -77,7 +76,7 @@ public class Controller {
 	 */
 	private void gameMenu() {
 		System.out.println(rs.getString("gameMenu"));
-		switch (Input.showOptionsAndGetInput(Options.GAME_MENU.getOptions())) {
+		switch (Input.showOptionsAndGetInput(Options.GAME_MENU)) {
 		case "fight":
 			boolean boss = false;
 			if (isBossFight()) {
@@ -138,7 +137,7 @@ public class Controller {
 		System.out.println(rs.getString("getName"));
 		String name = Input.getScanner().nextLine();
 		System.out.println(rs.getString("getSkillset"));
-		hero = new Hero(name, Input.showOptionsAndGetInput(Options.SKILLSET.getOptions()));
+		hero = new Hero(name, Input.showOptionsAndGetInput(Options.SKILLSET));
 		System.out.println(rs.getString("heroCreated"));
 		arena = new Arena(hero);
 	}
@@ -148,7 +147,7 @@ public class Controller {
 	 */
 	private void mainMenu() {
 		System.out.println(rs.getString("mainMenu"));
-		switch (Input.showOptionsAndGetInput(MainMenu.values())) {
+		switch (Input.showOptionsAndGetInput(Options.MAIN_MENU)) {
 		case "newGame": // start a new game and enter game menu
 			startProcedure();
 			exit = 1; // set menu to game menu
@@ -172,7 +171,7 @@ public class Controller {
 
 	private void saveGame() {
 		System.out.println(rs.getString("saveQuestion"));
-		if (Input.showOptionsAndGetInput(Options.YES_NO.getOptions()).equals("no")) {
+		if (Input.showOptionsAndGetInput(Options.YES_NO).equals("no")) {
 			System.out.println(rs.getString("gameNotSaved"));
 			return;
 		}
@@ -209,7 +208,7 @@ public class Controller {
 	private void languageSelection() {
 		System.out.println(rs.getString("availableLanguages"));
 		System.out.println("en: English\nsk: Slovenčina");
-		String choice = Input.showOptionsAndGetInput(Options.LANGUAGES.getOptions());
+		String choice = Input.showOptionsAndGetInput(Options.LANGUAGES);
 		if (!(choice.equals("exit"))) {
 			Preferences prefs = Prefs.getPrefs();
 			if (!(prefs.get("language", null).equals(choice))) {

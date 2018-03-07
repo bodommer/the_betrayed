@@ -62,7 +62,7 @@ public class TrainingGround {
 	 *         wants to leave this place
 	 */
 	private static boolean getAnswer(Hero hero, ResourceBundle rs) {
-		String input = Input.showOptionsAndGetInput(Options.TRAINING.getOptions());
+		String input = Input.showOptionsAndGetInput(Options.TRAINING);
 		if (input.equals("exit")) {
 			return false;
 		} else {

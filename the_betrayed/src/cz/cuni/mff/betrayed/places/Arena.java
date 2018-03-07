@@ -225,9 +225,9 @@ public class Arena {
 		protected boolean heroTurn() {
 			String[] options;
 			if (hero.getWeapon().getCode().equals("hands")) {
-				options = Options.HANDS_FIGHT.getOptions();
+				options = Options.HANDS_FIGHT;
 			} else {
-				options = Options.WEAPON_FIGHT.getOptions();
+				options = Options.WEAPON_FIGHT;
 			}
 			if (options.length == 2) {
 				System.out.println(rs.getString("bareHandsOptions"));

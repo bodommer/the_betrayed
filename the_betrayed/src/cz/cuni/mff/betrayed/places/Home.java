@@ -47,7 +47,7 @@ public Home(Hero hero) {
 		while (true) {
 			System.out
 					.println(rs.getString("homePrompt1"));
-			String answer = Input.showOptionsAndGetInput(Options.HOME.getOptions());
+			String answer = Input.showOptionsAndGetInput(Options.HOME);
 			switch (answer) {
 			case "seeWeapons":
 				seeWeapons();
