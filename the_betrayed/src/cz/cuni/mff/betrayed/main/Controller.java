@@ -27,6 +27,10 @@ import cz.cuni.mff.betrayed.places.WeaponsShop;
  */
 public class Controller{
 
+    private enum GameState {
+        MAIN_MENU, GAME_MENU, EXIT
+    }
+    
 	private final int FIGHTS_PER_LEVEL = 6;
 	private final int LEVEL_COUNT = 3;
 	private final String SAVE_FILE_NAME = "hero.ser";
@@ -39,7 +43,7 @@ public class Controller{
 	private Hero hero;
 	private static final Controller controller = new Controller();
 	private Arena arena;
-	private int exit = 2;
+	private GameState exit = GameState.MAIN_MENU;
 	private ResourceBundle rs;
 
 	/**
@@ -57,14 +61,14 @@ public class Controller{
 	private void startGame() {
 		System.out.println(rs.getString("welcome"));
 		while (true) {
-			if (exit == 2) {
+			if (exit.equals(GameState.MAIN_MENU)) {
 				mainMenu();
 			}
-			if (exit == 0) {
+			if (exit.equals(GameState.EXIT)) {
 				System.out.println(rs.getString("goodbye"));
 				System.exit(0);
 			}
-			while (exit == 1) {
+			while (exit.equals(GameState.GAME_MENU)) {
 				gameMenu();
 			}
 		}
@@ -83,7 +87,7 @@ public class Controller{
 				boss = true;
 			}
 			if (arena.startFight(boss)) {
-				exit = 2;
+				exit = GameState.MAIN_MENU;
 			} else {
 				hero.addKill();
 				if (isBossFight()) {
@@ -92,7 +96,7 @@ public class Controller{
 				if (hero.getFight() == LEVEL_COUNT * FIGHTS_PER_LEVEL) {
 					System.out.println(rs.getString("endGameLine"));
 					System.out.printf(rs.getString("scoreLine"), hero.getScore());
-					exit = 0;
+					exit = GameState.EXIT;
 				}
 			}
 			break;
@@ -112,13 +116,13 @@ public class Controller{
 			saveGame();
 			break;
 		case "menu":
-			exit = 2;
+			exit = GameState.MAIN_MENU;
 			break;
 		case "help":
 			// TODO implement showing controls/available commands
 			break;
 		case "exit":
-			exit = 0;
+			exit = GameState.EXIT;
 		default:
 			break; // if there is some invalid command
 		}
@@ -150,7 +154,7 @@ public class Controller{
 		switch (Input.showOptionsAndGetInput(Options.MAIN_MENU)) {
 		case "newGame": // start a new game and enter game menu
 			startProcedure();
-			exit = 1; // set menu to game menu
+			exit = GameState.GAME_MENU; // set menu to game menu
 			break;
 		case "load":
 			loadSavedGame();
@@ -162,7 +166,7 @@ public class Controller{
 			languageSelection();
 			break;
 		case "exit":
-			exit = 0;
+			exit = GameState.EXIT;
 			break;
 		default:
 			break;
@@ -188,7 +192,7 @@ public class Controller{
 			hero = (Hero) ois.readObject();
 			arena = new Arena(hero);
 			System.out.print(rs.getString("successfulLoad"));
-			exit = 1;
+			exit = GameState.GAME_MENU;
 		} catch (IOException e) {
 			System.out.println(rs.getString("loadFailed"));
 		} catch (ClassNotFoundException e) {
