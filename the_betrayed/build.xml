@@ -6,6 +6,7 @@
     <property name="build.dir"   value="target"/>
     <property name="classes.dir" value="${build.dir}/classes"/>
     <property name="jar.dir"     value="${build.dir}/jar"/>
+	<property name="javadocs.dest.dir"     value="${build.dir}/javadocs"/>
 
 	<property name="main-class"  value="cz.cuni.mff.betrayed.main.Controller"/>
 	
@@ -28,10 +29,13 @@
         </jar>
     </target>
 	
-
+    <target name="javadocs">
+        <mkdir dir="${javadocs.dest.dir}"/>
+    	<javadoc version="true" use="true" splitindex="true" sourcepath="src;resources" source="1.8" packagenames="cz.cuni.mff.betrayed.*" notree="false" nonavbar="false" noindex="false" nodeprecatedlist="false" nodeprecated="false" destdir="${javadocs.dest.dir}" classpath="." author="true" access="private"/>
+    </target>
 	
     <target name="clean-build" depends="clean,jar"/>
 
-    <target name="main" depends="clean, compile, jar"/>
+    <target name="main" depends="clean, compile, jar, javadocs"/>
 	
 </project>

@@ -8,8 +8,10 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.Locale;
 import java.util.ResourceBundle;
+import java.util.logging.FileHandler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.logging.SimpleFormatter;
 import java.util.prefs.Preferences;
 
 import cz.cuni.mff.betrayed.character.Hero;
@@ -55,6 +57,15 @@ public class Controller {
      */
     private Controller() {
         setLanguage();
+        try {
+            logger.setUseParentHandlers(false);
+            FileHandler fh = new FileHandler("error_log.txt", true);
+            SimpleFormatter sf = new SimpleFormatter();
+            fh.setFormatter(sf);
+            logger.addHandler(fh);
+        } catch (IOException io) {
+        
+        }
     }
 
     /**

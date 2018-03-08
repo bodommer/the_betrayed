@@ -3,8 +3,10 @@ package cz.cuni.mff.betrayed.main;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.logging.FileHandler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.logging.SimpleFormatter;
 
 /**
  * This class is responsible for reading files with Buffered Reader.
@@ -25,7 +27,15 @@ public class MyFileReader implements AutoCloseable {
      *            - what is the file name?
      */
     public MyFileReader(String file) {
+        
         in = new BufferedReader(new InputStreamReader(getClass().getResourceAsStream("/files/" + file)));
+        try {
+            logger.setUseParentHandlers(false);
+            FileHandler fh = new FileHandler("error_log.txt", true);
+            SimpleFormatter sf = new SimpleFormatter();
+            fh.setFormatter(sf);
+            logger.addHandler(fh);
+        } catch (IOException io) {}
     }
 
     /**

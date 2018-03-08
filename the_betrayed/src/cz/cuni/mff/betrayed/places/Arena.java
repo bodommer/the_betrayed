@@ -1,10 +1,13 @@
 package cz.cuni.mff.betrayed.places;
 
+import java.io.IOException;
 import java.util.Random;
 import java.util.ResourceBundle;
 import java.util.concurrent.TimeUnit;
+import java.util.logging.FileHandler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.logging.SimpleFormatter;
 
 import cz.cuni.mff.betrayed.character.Hero;
 import cz.cuni.mff.betrayed.character.Opponent;
@@ -35,7 +38,16 @@ public class Arena {
      */
     public Arena(Hero hero) {
         this.hero = hero;
-        rs = Controller.getController().getResourceBundle();
+        try {
+            rs = Controller.getController().getResourceBundle();
+            logger.setUseParentHandlers(false);
+            FileHandler fh = new FileHandler("error_log.txt", true);
+            SimpleFormatter sf = new SimpleFormatter();
+            fh.setFormatter(sf);
+            logger.addHandler(fh);
+        } catch (IOException io) {
+
+        }
     }
 
     /**

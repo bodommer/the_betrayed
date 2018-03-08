@@ -1,7 +1,10 @@
 package cz.cuni.mff.betrayed.character;
 
+import java.io.IOException;
+import java.util.logging.FileHandler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.logging.SimpleFormatter;
 
 import cz.cuni.mff.betrayed.equipment.Armour;
 import cz.cuni.mff.betrayed.equipment.Weapon;
@@ -30,6 +33,14 @@ public class Opponent extends Person {
      */
     public Opponent(int level, int line) {
         MyFileReader mfr;
+        
+        try {
+            logger.setUseParentHandlers(false);
+            FileHandler fh = new FileHandler("error_log.txt", true);
+            SimpleFormatter sf = new SimpleFormatter();
+            fh.setFormatter(sf);
+            logger.addHandler(fh);
+        } catch (IOException io) {}
 
         try {
             String str = "level" + level;
