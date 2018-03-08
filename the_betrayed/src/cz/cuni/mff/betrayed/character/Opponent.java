@@ -1,5 +1,8 @@
 package cz.cuni.mff.betrayed.character;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import cz.cuni.mff.betrayed.equipment.Armour;
 import cz.cuni.mff.betrayed.equipment.Weapon;
 import cz.cuni.mff.betrayed.main.MyFileReader;
@@ -13,6 +16,7 @@ import cz.cuni.mff.betrayed.main.MyFileReader;
 public class Opponent extends Person {
 
 	private static final long serialVersionUID = 3;
+	private Logger logger = Logger.getLogger(Opponent.class.getName());
 
 	/**
 	 * The constructor. Reads data from given file and line to create a new Opponent
@@ -45,6 +49,7 @@ public class Opponent extends Person {
 			setArmour(new Armour(attrs[7]));
 		} catch (Exception e) {
 			setHP(-1);
+			logger.log(Level.WARNING, "Unable to create the opponent.", e);
 		}
 	}
 

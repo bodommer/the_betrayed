@@ -8,6 +8,8 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.Locale;
 import java.util.ResourceBundle;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.prefs.Preferences;
 
 import cz.cuni.mff.betrayed.character.Hero;
@@ -30,15 +32,16 @@ public class Controller{
     private enum GameState {
         MAIN_MENU, GAME_MENU, EXIT
     }
-    
-	private final int FIGHTS_PER_LEVEL = 6;
-	private final int LEVEL_COUNT = 3;
-	private final String SAVE_FILE_NAME = "hero.ser";
+     
+    private final int FIGHTS_PER_LEVEL = 6;
+    private final int LEVEL_COUNT = 3;
+    private final String SAVE_FILE_NAME = "hero.ser";
 	private final String SAVE_LOCATION = "." + File.separator + SAVE_FILE_NAME;
 	private final String LANGUAGE = "language";
 	private final String LANGUAGE_SLOVAK = "sk-SK";
 	private final String LANGUAGE_CZECH = "cs-CZ";
 	private final String LOCALISATION_ADDRESS = "localization.resource";
+	private Logger logger = Logger.getLogger(Controller.class.getName());
 	
 	private Hero hero;
 	private static final Controller controller = new Controller();
@@ -184,6 +187,7 @@ public class Controller{
 			System.out.println(rs.getString("gameSaved"));
 		} catch (IOException e) {
 			System.out.println(rs.getString("saveFailed"));
+			logger.log(Level.WARNING, "Did not manage to save the Game.", e);
 		}
 	}
 
@@ -195,8 +199,10 @@ public class Controller{
 			exit = GameState.GAME_MENU;
 		} catch (IOException e) {
 			System.out.println(rs.getString("loadFailed"));
+			logger.log(Level.WARNING, "Did not manage to load the Game.", e);
 		} catch (ClassNotFoundException e) {
 			System.out.println(rs.getString("loadFailedClassNotFound"));
+			logger.log(Level.WARNING, "Did not manage to load the Game.", e);
 		}
 	}
 

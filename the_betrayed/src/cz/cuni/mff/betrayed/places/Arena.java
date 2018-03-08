@@ -3,6 +3,8 @@ package cz.cuni.mff.betrayed.places;
 import java.util.Random;
 import java.util.ResourceBundle;
 import java.util.concurrent.TimeUnit;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import cz.cuni.mff.betrayed.character.Hero;
 import cz.cuni.mff.betrayed.character.Opponent;
@@ -24,6 +26,7 @@ public class Arena {
 	private Random random = new Random();
 	private Hero hero;
 	private ResourceBundle rs;
+	private Logger logger = Logger.getLogger(Arena.class.getName());
 
 	/**
 	 * The constructor.
@@ -66,6 +69,7 @@ public class Arena {
 					try {
 						end = opponentTurn(fight); // get opponent's turn
 					} catch (InterruptedException ie) {
+					    logger.log(Level.WARNING, "A process was interupted during the opponent turn.", ie);
 						return false;
 					}
 					if (isAlive(hero)) { // check if hero is still alive
@@ -81,6 +85,7 @@ public class Arena {
 				try {
 					end = opponentTurn(fight); // get opponent's turn
 				} catch (InterruptedException ie) {
+				    logger.log(Level.WARNING, "A process was interupted during the opponent turn.", ie);
 					return false;
 				}
 				if (end) {

@@ -3,6 +3,8 @@ package cz.cuni.mff.betrayed.main;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * This class is responsible for reading files with Buffered Reader.
@@ -11,8 +13,10 @@ import java.io.InputStreamReader;
  *
  */
 public class MyFileReader implements AutoCloseable {
-	private BufferedReader in;
-
+	
+    private BufferedReader in;
+    private Logger logger = Logger.getLogger(MyFileReader.class.getName());
+	
 	/**
 	 * Constructor - opens the file and is ready for reading it.
 	 * 
@@ -34,6 +38,7 @@ public class MyFileReader implements AutoCloseable {
 		try {
 			return in.readLine();
 		} catch (IOException io) {
+		    logger.log(Level.SEVERE, "Unable to read a line from a file.", io);
 			return "ERROR";
 		}
 	}
@@ -47,6 +52,7 @@ public class MyFileReader implements AutoCloseable {
 		try {
 			return in.readLine().split(";");
 		} catch (IOException io) {
+	        logger.log(Level.SEVERE, "Unable to read and divide a line from a file.", io);
 			return "ERROR".split(" ");
 		}
 	}
@@ -55,6 +61,7 @@ public class MyFileReader implements AutoCloseable {
 		try {
 			in.close();
 		} catch (IOException io) {
+            logger.log(Level.SEVERE, "An error occured while closing MyFileReader.", io);
 		}
 	}
 }
